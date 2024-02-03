@@ -1,7 +1,7 @@
 using RogueLike.Components.Core;
 using RogueLike.Interfaces.Objects;
 
-using static RogueLike.Components.Constants.Constants;
+using static RogueLike.Settings.ObjectSymbols;
 
 namespace RogueLike.Components.StaticObjects
 {

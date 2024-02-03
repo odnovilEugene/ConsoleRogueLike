@@ -13,6 +13,6 @@ namespace RogueLike.Interfaces.Objects
         int Height { get; }
         int Width { get; }
         MazeGenerator MazeGenerator { get; }
-        IGameObject[,] Field { get; }
+        GameObject[,] Field { get; }
     }
 }

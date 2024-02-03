@@ -1,4 +1,6 @@
-﻿using RogueLike.Components.Core;
+﻿using System.Runtime.CompilerServices;
+using RogueLike.Components.Core;
+using RogueLike.Settings;
 
 namespace RogueLike
 {
@@ -8,11 +10,8 @@ namespace RogueLike
         static void Main(string[] args)
         {
             // Реструктурировать файлы, только Program вверху
-            
-            int width = 25;
-            int height = 15;
 
-            var game = new Game(height, width);
+            var game = new Game();
             game.RenderGame();
         }
     }

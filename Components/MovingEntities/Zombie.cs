@@ -1,7 +1,7 @@
 using RogueLike.Components.Core;
 using RogueLike.Interfaces.Objects;
 
-namespace RogueLike.Components.MovingGameObje
+namespace RogueLike.Components.MovingGameObject
 {
     public class Zombie : GameObject, IMovingGameObject, ILivingGameObject
     {

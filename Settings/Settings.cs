@@ -1,15 +1,15 @@
 using RogueLike.Components.Core;
 
-namespace RogueLike.Components.Constants
+namespace RogueLike.Settings
 {
-    internal static class Constants
+    internal static class ObjectSymbols
     {
         internal const char EmptyCellSymbol = ' ';
         internal const char WallSymbol = '▓';
         internal const char FirstAidKitSymbol = '+';
     }
 
-    internal static class Settings
+    internal static class MapSettings
     {
         internal const int Height = 15;
         internal const int Width = 25;

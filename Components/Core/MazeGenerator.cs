@@ -3,7 +3,7 @@ using RogueLike.Components.Core;
 using RogueLike.Components.StaticObjects;
 using RogueLike.Interfaces.Objects;
 using static RogueLike.Utils.Utils;
-using static RogueLike.Components.Constants.Constants;
+using static RogueLike.Settings.ObjectSymbols;
 
 namespace RogueLike.Components
 {
@@ -22,7 +22,7 @@ namespace RogueLike.Components
             _data = new char[_width, _height];
         }
 
-        public IGameObject[,] Generate(Position2D start, Position2D finish)
+        public GameObject[,] Generate(Position2D start, Position2D finish)
         {
             Initialize();
             GenerateMaze(start.X, start.Y);
@@ -30,9 +30,9 @@ namespace RogueLike.Components
             return CharMazeToGameObjectMaze();
         }
 
-        private IGameObject[,] CharMazeToGameObjectMaze()
+        private GameObject[,] CharMazeToGameObjectMaze()
         {
-            var gameObjectMaze = new IGameObject[_width, _height];
+            var gameObjectMaze = new GameObject[_width, _height];
             
             for (int y = 0; y < _height; y++)
             {

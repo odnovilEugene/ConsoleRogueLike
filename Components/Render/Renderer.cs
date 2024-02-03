@@ -6,7 +6,7 @@ namespace RogueLike.Components.Render
     {
         public static void PrintGame(Game game)
         {
-            var map = game.Map;
+            var map = Map.Instance;
             Console.Clear();
             Console.WriteLine($"Level : {game.Level}");
             Console.WriteLine(map);

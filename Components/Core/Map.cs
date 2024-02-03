@@ -1,72 +1,29 @@
-using RogueLike.Components.Core;
 using RogueLike.Interfaces.Objects;
+using RogueLike.Settings;
 
 
 
 namespace RogueLike.Components.Core
 {
-    // public sealed class Map : IMap
-    // {
-    //     private static readonly Lazy<Map> lazy = new Lazy<Map>(() => new Map());
-
-    //     public static Map Instance { get { return lazy.Value; } }
-
-    //     public int Height { get; }
-    //     public int Width { get; }
-    //     public IGameObject[,] Field { get; }
-    //     public MazeGenerator MazeGenerator { get; }
-    //     public int Seed { get; set; }
-
-    //     public Map(int height, int width, Position2D start, Position2D finish, int seed)
-    //     {
-    //         Height = height;
-    //         Width = width;
-    //         Seed = seed;
-    //         MazeGenerator = new MazeGenerator(Width, Height, Seed);
-    //         Field = MazeGenerator.Generate(start, finish);
-    //     }
-        
-    //     public override string ToString()
-    //     {
-    //         string stringMap = "";
-    //         for (int y = 0; y < Height; y++)
-    //         {
-    //             for (int x = 0; x < Width; x++)
-    //             {
-    //                 stringMap += this[x, y];
-    //             }
-    //             stringMap += "\n";
-    //         }
-    //         return string.Format(stringMap);
-    //     }
-    
-    //     // Индексаторы для Map
-    //     public IGameObject this [Position2D pos] {
-    //         get => Field[pos.Y, pos.X];
-    //         set => Field[pos.Y, pos.X] = value;
-    //     }
-
-    //     public IGameObject this [int y, int x] {
-    //         get => Field[y, x];
-    //         set => Field[y, x] = value;
-    //     }
-    // }
-
-    public class Map : IMap
+    public sealed class Map : IMap
     {
+        private static readonly Lazy<Map> lazy = new(() => new Map());
+
+        public static Map Instance { get { return lazy.Value; } }
+
         public int Height { get; }
         public int Width { get; }
-        public IGameObject[,] Field { get; }
+        public GameObject[,] Field { get; set; }
         public MazeGenerator MazeGenerator { get; }
         public int Seed { get; set; }
 
-        public Map(int height, int width, Position2D start, Position2D finish, int seed)
+        public Map()
         {
-            Height = height;
-            Width = width;
-            Seed = seed;
+            Height = MapSettings.Height;
+            Width = MapSettings.Width;
+            Seed = MapSettings.Seed != -1 ? MapSettings.Seed : (int)DateTime.Now.Ticks;
             MazeGenerator = new MazeGenerator(Width, Height, Seed);
-            Field = MazeGenerator.Generate(start, finish);
+            Field = MazeGenerator.Generate(MapSettings.start, MapSettings.finish);
         }
         
         public override string ToString()
@@ -76,7 +33,7 @@ namespace RogueLike.Components.Core
             {
                 for (int x = 0; x < Width; x++)
                 {
-                    stringMap += this[x, y];
+                    stringMap += this[y, x];
                 }
                 stringMap += "\n";
             }
@@ -84,14 +41,14 @@ namespace RogueLike.Components.Core
         }
     
         // Индексаторы для Map
-        public IGameObject this [Position2D pos] {
+        public GameObject this [Position2D pos] {
             get => Field[pos.Y, pos.X];
             set => Field[pos.Y, pos.X] = value;
         }
 
-        public IGameObject this [int y, int x] {
-            get => Field[y, x];
-            set => Field[y, x] = value;
+        public GameObject this [int y, int x] {
+            get => Field[x, y];
+            set => Field[x, y] = value;
         }
     }
 }
