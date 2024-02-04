@@ -1,19 +1,23 @@
 using RogueLike.Components.MovingGameObject;
-using RogueLike.Components.Core;
-using RogueLike.Interfaces.Objects;
 using RogueLike.Components.StaticObjects;
 using RogueLike.Components.Render;
 using RogueLike.Settings;
 
 namespace RogueLike.Components.Core
 {
-    public class Game
+    public sealed class Game
     {
+        private static readonly Lazy<Game> lazy = new(() => new Game());
+
+        public static Game Instance { get { return lazy.Value; } }
+
         public int Level { get; private set; } = 0;
         public int EnemiesCount { get; set; } = 0;
         public int PropsCount { get; set; } = 0;
         public Player Player { get; private set; }
-        
+
+        public static event Action? OnTurn;
+
         private Dictionary<Position2D, GameObject> Enemies { get; } = new();
         private Dictionary<Position2D, GameObject> Props { get; } = new();
         private Dictionary<Position2D, Projectile> Projectiles { get; } = new();
@@ -37,8 +41,8 @@ namespace RogueLike.Components.Core
         private void Initialize(bool startCorner = true)
         {
             Level++;
-            int MapHeight = Map.Instance.Height;
-            int MapWidth = Map.Instance.Width;
+            int MapHeight = Map.Height;
+            int MapWidth = Map.Width;
 
             int enemiesNumber = MapWidth / 8 + Level;
             int propNumber = (MapWidth / 8) - Level >= 1 ? (MapWidth / 8) - Level : 1;
@@ -147,11 +151,6 @@ namespace RogueLike.Components.Core
             
         }
         
-        private bool InBounds(Position2D pos)
-        {
-            return 0 < pos.Y && pos.Y <= Map.Instance.Height - 1 
-            && 0 < pos.X && pos.X <= Map.Instance.Width - 1;
-        }
 
         // Обойтись
         // public void GameLoop()

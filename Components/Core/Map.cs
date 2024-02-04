@@ -11,16 +11,14 @@ namespace RogueLike.Components.Core
 
         public static Map Instance { get { return lazy.Value; } }
 
-        public int Height { get; }
-        public int Width { get; }
+        public static int Height { get; } = MapSettings.Height;
+        public static int Width { get; } = MapSettings.Width;
         public GameObject[,] Field { get; set; }
         public MazeGenerator MazeGenerator { get; }
-        public int Seed { get; set; }
+        public static int Seed { get; set; }
 
         public Map()
         {
-            Height = MapSettings.Height;
-            Width = MapSettings.Width;
             Seed = MapSettings.Seed != -1 ? MapSettings.Seed : (int)DateTime.Now.Ticks;
             MazeGenerator = new MazeGenerator(Width, Height, Seed);
             Field = MazeGenerator.Generate(MapSettings.start, MapSettings.finish);

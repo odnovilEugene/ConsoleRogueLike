@@ -7,6 +7,10 @@ namespace RogueLike.Settings
         internal const char EmptyCellSymbol = ' ';
         internal const char WallSymbol = '▓';
         internal const char FirstAidKitSymbol = '+';
+        internal const char PlayerSymbol = 'P';
+        internal const char ZombieSymbol = 'Z';
+        internal const char ShooterSymbol = 'S';
+        internal const char ProjectileSymbol = '*';
     }
 
     internal static class MapSettings

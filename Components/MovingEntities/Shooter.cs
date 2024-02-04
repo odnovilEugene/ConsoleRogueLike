@@ -13,13 +13,14 @@ namespace RogueLike.Components.MovingGameObject
         public Shooter(Position2D pos)
         {
             Position = pos;
-            Symbol = 'S';
+            Symbol = Settings.ObjectSymbols.ShooterSymbol;
             MaxHp = 1;
             Hp = MaxHp;
             Attack = 0;
+            Game.OnTurn += Move;
         }
 
-        public void Move(Position2D pos) {}
+        public void Move() {}
 
         public void TakeDamage(int amount)
         {

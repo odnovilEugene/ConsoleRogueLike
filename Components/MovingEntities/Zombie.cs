@@ -13,13 +13,14 @@ namespace RogueLike.Components.MovingGameObject
         public Zombie(Position2D pos)
         {
             Position = pos;
-            Symbol = 'Z';
+            Symbol = Settings.ObjectSymbols.ZombieSymbol;
             MaxHp = 3;
             Hp = MaxHp;
             Attack = 1;
+            Game.OnTurn += Move;
         }
 
-        public void Move(Position2D pos) {}
+        public void Move() {}
 
         public void TakeDamage(int amount)
         {

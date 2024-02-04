@@ -1,7 +1,6 @@
 
 using RogueLike.Components.Core;
 using RogueLike.Components.StaticObjects;
-using RogueLike.Interfaces.Objects;
 using static RogueLike.Utils.Utils;
 using static RogueLike.Settings.ObjectSymbols;
 
@@ -81,7 +80,8 @@ namespace RogueLike.Components
         }
 
         private void MakeAccessible(Position2D finish)
-        {
+        {   
+            Console.WriteLine(Map.Height);
             var directions = new (int, int)[] { (0, -1), (0, 1), (-1, 0), (1, 0) };
             foreach (var (dx, dy) in directions)
             {
