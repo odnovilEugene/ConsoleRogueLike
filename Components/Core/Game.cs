@@ -44,11 +44,12 @@ namespace RogueLike.Components.Core
             int enemiesNumber = MapWidth / 8 + Level;
             int propNumber = (MapWidth / 8) - Level >= 1 ? (MapWidth / 8) - Level : 1;
 
+            Map.Instance[Player.Position] = new Empty(Player.Position);
             Player.Position = startCorner ? MapSettings.start : MapSettings.finish;
             Map.Instance[Player.Position] = Player;
 
-            Range widthR = startCorner ? new(3, MapWidth - 1) : new(3, MapWidth - 4);
-            Range heightR = startCorner ? new(3, MapHeight - 1) : new(0, MapHeight - 4);
+            Range widthR = startCorner ? new(3, MapWidth - 1) : new(0, MapWidth - 2);
+            Range heightR = startCorner ? new(3, MapHeight - 1) : new(0, MapHeight - 2);
             GenerateEnemies(enemiesNumber, widthR, heightR);
             GenerateProps(propNumber, widthR, heightR);
         }
@@ -146,14 +147,14 @@ namespace RogueLike.Components.Core
 
                 if (PlayerInput.DirectionToInput(direction) == PlayerInput.BreakKey)
                 {
-                    Console.Clear();
+                    // Console.Clear();
                     Console.WriteLine("You exited the game!");
                     break;
                 }
 
                 if (IsGameOver)
                 {
-                    Console.Clear();
+                    // Console.Clear();
                     Console.WriteLine("GAME OVER!");
                     break;
                 }
@@ -170,9 +171,11 @@ namespace RogueLike.Components.Core
                     if (answer == PlayerInput.AcceptKey)
                         Initialize(Level % 2 == 0);
                     else if (answer == PlayerInput.RejectKey)
-                        Console.Clear();
+                    {
+                        // Console.Clear();
                         Console.Write("You exited the game!");
                         break;
+                    }
                 }
             } while (PlayerInput.DirectionToInput(direction) != PlayerInput.BreakKey);
         }

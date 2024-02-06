@@ -17,7 +17,7 @@ namespace RogueLike.Components.MovingGameObject
             Symbol = Settings.ObjectSymbols.ShooterSymbol;
             MaxHp = 1;
             Hp = MaxHp;
-            Attack = 0;
+            Attack = 1;
             Game.OnTurn += Move;
         }
 
@@ -30,12 +30,12 @@ namespace RogueLike.Components.MovingGameObject
                 (dx, dy) = Position.X - playerPos.X > 0 ? (-1, 0) : (1, 0);
                 Position2D tempPos = Position;
                 Position2D tempPlayerPos = playerPos;
-                do
+                while (Math.Abs(tempPos.X - tempPlayerPos.X) > 1)
                 {
                     tempPos.X += dx;
                     if (Map.Instance[tempPos] is not Empty)
                         return (0, 0);
-                } while (tempPos != tempPlayerPos);
+                }
                 return (dx, dy);
             }
             else if (Position.X == playerPos.X)
@@ -43,12 +43,12 @@ namespace RogueLike.Components.MovingGameObject
                 (dx, dy) = Position.Y - playerPos.Y > 0 ? (0, -1) : (0, 1);
                 Position2D tempPos = Position;
                 Position2D tempPlayerPos = playerPos;
-                do
+                while (Math.Abs(tempPos.Y - tempPlayerPos.Y) > 1)
                 {
                     tempPos.Y += dy;
                     if (Map.Instance[tempPos] is not Empty)
                         return (0, 0);
-                } while (tempPos != tempPlayerPos);
+                }
                 return (dx, dy);
             }
             return (dx, dy);
@@ -56,7 +56,6 @@ namespace RogueLike.Components.MovingGameObject
 
         public void Move() 
         {
-            Console.WriteLine("Shooters move activated");
             (int dx, int dy) = ChooseDirection();
             if ((dx, dy) != (0, 0))
             {
@@ -87,8 +86,7 @@ namespace RogueLike.Components.MovingGameObject
             Hp -= amount;
             if (IsDead)
             {
-                Game.Instance.Enemies.Remove(Position);
-                Map.Instance[Position] = new Empty(Position);
+                Die();
             } 
         }
 
@@ -101,6 +99,22 @@ namespace RogueLike.Components.MovingGameObject
         {
             var className = GetType().Name;
             return $"{className}: Hp {Hp} / {MaxHp}, Position: {Position}";
+        }
+
+        public void Die()
+        {
+            Game.OnTurn -= Move;
+            Game.Instance.Enemies.Remove(Position);
+            Map.Instance[Position] = new Empty(Position);
+        }
+
+        public void ChangePosition(Position2D newPosition)
+        {
+            Game.Instance.Enemies.Remove(Position);
+            Game.Instance.Enemies.Add(newPosition, this);
+            Map.Instance[Position] = new Empty(Position);
+            Map.Instance[newPosition] = this;
+            Position = newPosition;
         }
     }
 }

@@ -32,25 +32,19 @@ namespace RogueLike.Components.MovingGameObject
                     {
                         if (staticObject is FirstAidKit aidKit)
                             Heal(aidKit.HealAmount);
-                        Map.Instance[Position] = new Empty(Position);
-                        Map.Instance[newPos] = this;
-                        Position = newPos;
+                        ChangePosition(newPos);
                     }
                     break;
                 case ILivingGameObject livingGameObject:
                     livingGameObject.TakeDamage(Attack);
-                    if (!Game.Instance.Enemies.ContainsKey(newPos))
+                    if (livingGameObject.IsDead)
                     {
-                        Map.Instance[Position] = new Empty(Position);
-                        Map.Instance[newPos] = this;
-                        Position = newPos;
+                        ChangePosition(newPos);
                     }
                     break;
                 case Projectile projectile:
                     projectile.BlowUp();
-                    Map.Instance[Position] = new Empty(Position);
-                    Map.Instance[newPos] = this;
-                    Position = newPos;
+                    ChangePosition(newPos);
                     break;
             }
         }
@@ -75,6 +69,14 @@ namespace RogueLike.Components.MovingGameObject
         {
             var className = GetType().Name;
             return $"{className}: Hp {Hp} / {MaxHp}, Position: {Position}";
+        }
+
+        public void Die() {}
+        public void ChangePosition(Position2D newPosition) 
+        {
+            Map.Instance[Position] = new Empty(Position);
+            Map.Instance[newPosition] = this;
+            Position = newPosition;
         }
     }
 }

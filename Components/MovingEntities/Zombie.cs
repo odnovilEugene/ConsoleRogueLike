@@ -30,12 +30,12 @@ namespace RogueLike.Components.MovingGameObject
                 (dx, dy) = Position.X - playerPos.X > 0 ? (-1, 0) : (1, 0);
                 Position2D tempPos = Position;
                 Position2D tempPlayerPos = playerPos;
-                do
+                while (Math.Abs(tempPos.X - tempPlayerPos.X) > 1)
                 {
                     tempPos.X += dx;
                     if (Map.Instance[tempPos] is not Empty)
                         return (0, 0);
-                } while (tempPos != tempPlayerPos);
+                }
                 return (dx, dy);
             }
             else if (Position.X == playerPos.X)
@@ -43,12 +43,12 @@ namespace RogueLike.Components.MovingGameObject
                 (dx, dy) = Position.Y - playerPos.Y > 0 ? (0, -1) : (0, 1);
                 Position2D tempPos = Position;
                 Position2D tempPlayerPos = playerPos;
-                do
+                while (Math.Abs(tempPos.Y - tempPlayerPos.Y) > 1)
                 {
                     tempPos.Y += dy;
-                    if (!(Map.Instance[tempPos] is IStaticGameObject staticObject && !staticObject.IsPassable))
+                    if (Map.Instance[tempPos] is not Empty)
                         return (0, 0);
-                } while (tempPos != tempPlayerPos);
+                }
                 return (dx, dy);
             }
             return (dx, dy);
@@ -56,10 +56,10 @@ namespace RogueLike.Components.MovingGameObject
 
         public void Move() 
         {
-            (int dy, int dx) = ChooseDirection();
-            if ((dy, dx) != (0, 0))
+            (int dx, int dy) = ChooseDirection();
+            if ((dx, dy) != (0, 0))
             {
-                Position2D newPos = new(Position.Y + dy, Position.X + dx);
+                Position2D newPos = new(Position.X + dx, Position.Y + dy);
                 var objectOnCell = Map.Instance[newPos];
                 switch (objectOnCell)
                 {
@@ -68,19 +68,11 @@ namespace RogueLike.Components.MovingGameObject
                         {
                             if (staticObject is FirstAidKit aidKit)
                                 aidKit.SelfDestruct();
-                            Map.Instance[Position] = new Empty(Position);
-                            Map.Instance[newPos] = this;
-                            Position = newPos;
+                            ChangePosition(newPos);
                         }
                         break;
-                    case ILivingGameObject livingGameObject:
-                        livingGameObject.TakeDamage(Attack);
-                        if (!Game.Instance.Enemies.ContainsKey(newPos))
-                        {
-                            Map.Instance[Position] = new Empty(Position);
-                            Map.Instance[newPos] = this;
-                            Position = newPos;
-                        }
+                    case Player player:
+                        player.TakeDamage(Attack);
                         break;
                 }
             }
@@ -91,8 +83,7 @@ namespace RogueLike.Components.MovingGameObject
             Hp -= amount;
             if (IsDead)
             {
-                Game.Instance.Enemies.Remove(Position);
-                Map.Instance[Position] = new Empty(Position);
+                Die();
             }
         }
 
@@ -105,6 +96,22 @@ namespace RogueLike.Components.MovingGameObject
         {
             var className = GetType().Name;
             return $"{className}: Hp {Hp} / {MaxHp}, Position: {Position}";
+        }
+
+        public void Die()
+        {
+            Game.OnTurn -= Move;
+            Game.Instance.Enemies.Remove(Position);
+            Map.Instance[Position] = new Empty(Position);
+        }
+
+        public void ChangePosition(Position2D newPosition)
+        {
+            Game.Instance.Enemies.Remove(Position);
+            Game.Instance.Enemies.Add(newPosition, this);
+            Map.Instance[Position] = new Empty(Position);
+            Map.Instance[newPosition] = this;
+            Position = newPosition;
         }
     }
 }

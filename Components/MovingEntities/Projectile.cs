@@ -14,11 +14,13 @@ namespace RogueLike.Components.MovingGameObject
             Position = pos;
             Symbol = Settings.ObjectSymbols.ProjectileSymbol;
             Damage = 1;
+            Direction = direction;
             Game.OnTurn += Move;
         }
 
         public void BlowUp()
         {
+            Game.OnTurn -= Move;
             Map.Instance[Position] = new Empty(Position);
         }
 
@@ -40,10 +42,14 @@ namespace RogueLike.Components.MovingGameObject
                         }
                         else
                         {
-                            Map.Instance[Position] = new Empty(Position);
                             Map.Instance[newPos] = this;
+                            Map.Instance[Position] = new Empty(Position);
                             Position = newPos;
                         }
+                    }
+                    else
+                    {
+                        this.BlowUp();
                     }
                     break;
                 case ILivingGameObject livingGameObject:
