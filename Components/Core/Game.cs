@@ -2,6 +2,7 @@ using RogueLike.Components.MovingGameObject;
 using RogueLike.Components.StaticObjects;
 using RogueLike.Components.Render;
 using RogueLike.Settings;
+using RogueLike.Interfaces.Objects;
 
 namespace RogueLike.Components.Core
 {
@@ -18,13 +19,9 @@ namespace RogueLike.Components.Core
 
         public static event Action? OnTurn;
 
-        private Dictionary<Position2D, GameObject> Enemies { get; } = new();
-        private Dictionary<Position2D, GameObject> Props { get; } = new();
-        private Dictionary<Position2D, Projectile> Projectiles { get; } = new();
-
+        public Dictionary<Position2D, ILivingGameObject> Enemies { get; } = new();
         private bool IsGameOver => Player.Hp <= 0;
-        private bool LevelDone => Enemies.Count == 0;
-        
+        private bool LevelDone => Enemies.Count == 0;        
 
         // Значение по умолчанию
         public Game()
@@ -40,7 +37,7 @@ namespace RogueLike.Components.Core
 
         private void Initialize(bool startCorner = true)
         {
-            Level++;
+            Level++; 
             int MapHeight = Map.Height;
             int MapWidth = Map.Width;
 
@@ -56,9 +53,9 @@ namespace RogueLike.Components.Core
             GenerateProps(propNumber, heightR, widthR);
         }
 
-        public void RenderGame()
+        public static void RenderGame()
         {
-            Renderer.PrintGame(this);
+            Renderer.PrintGame();
         }
 
         private void GenerateEnemies(int n, Range yR, Range xR)
@@ -80,7 +77,7 @@ namespace RogueLike.Components.Core
                 {
                     // Использовать тернарник
                     Enemies.Add(enemyPos, (Random.Shared.Next(0, 100) % 2 == 0) ? new Zombie(enemyPos) : new Shooter(enemyPos));
-                    Map.Instance[y, x] = Enemies[enemyPos];
+                    Map.Instance[y, x] = (GameObject)Enemies[enemyPos];
                     EnemiesCount++;
                 }
                 counter++;
@@ -105,8 +102,7 @@ namespace RogueLike.Components.Core
                 if (Map.Instance[y, x] is Empty)
                 {
                     // Использовать тернарник
-                    Props.Add(propPos, new FirstAidKit(propPos));
-                    Map.Instance[y, x] = Props[propPos];
+                    Map.Instance[y, x] = new FirstAidKit(propPos);
                     PropsCount++;
                 }
                 counter++;
@@ -126,68 +122,63 @@ namespace RogueLike.Components.Core
         }
 
 
-        // private ConsoleKey StartGame()
-        // {
-        //     ConsoleKey key;
-        //     Renderer.PrintGame(this);
-        //     do
-        //     {
-        //         // Отойти от консоли, сделать свою абстракцию Action, чтобы при изменении типа инпута нужно было переписывать только свою абстракцию, а не все строчки, где вызывается этот инпут
-        //         key = Console.ReadKey().Key;
-        //         MakeTurn(key);
-        //         Renderer.PrintGame(this);
-
-        //     } while ((key != ConsoleKey.Enter) && !LevelDone && !IsGameOver);
-        //     return key;
-        // }
-
-        private void ProjectileMove(Projectile projectile)
+        private (int, int) LevelLoop()
         {
+            (int, int) direction;
+            RenderGame();
+            do
+            {
+                // Отойти от консоли, сделать свою абстракцию Action, чтобы при изменении типа инпута нужно было переписывать только свою абстракцию, а не все строчки, где вызывается этот инпут
+                direction = PlayerInput.ReadMoveInput();
+                MakeTurn(direction);
+                RenderGame();
+            } while (PlayerInput.DirectionToInput(direction) != PlayerInput.BreakKey && !LevelDone && !IsGameOver);
             
+            return direction;
         }
 
-        private void MakeTurn(ConsoleKey key)
+        public void GameLoop()
+        {
+            (int, int) direction;
+            do
+            {
+                direction = LevelLoop();
+
+                if (PlayerInput.DirectionToInput(direction) == PlayerInput.BreakKey)
+                {
+                    Console.Clear();
+                    Console.WriteLine("You exited the game!");
+                    break;
+                }
+
+                if (IsGameOver)
+                {
+                    Console.Clear();
+                    Console.WriteLine("GAME OVER!");
+                    break;
+                }
+
+                if (LevelDone) {
+                    ConsoleKey answer;
+                    do 
+                    {
+                        Console.Clear();
+                        Console.Write("Continue to next level?\ny/n : ");
+                        answer = PlayerInput.ReadInput();
+                    } while ((answer != PlayerInput.AcceptKey) && (answer != PlayerInput.RejectKey));
+
+                    if (answer == PlayerInput.AcceptKey)
+                        Initialize(Level % 2 != 0);
+                    else if (answer == PlayerInput.RejectKey)
+                        break;
+                }
+            } while (PlayerInput.DirectionToInput(direction) != PlayerInput.BreakKey);
+        }
+
+        private void MakeTurn((int, int) direction)
         {   
-            
+            Player.Move(direction);
+            OnTurn();
         }
-        
-
-        // Обойтись
-        // public void GameLoop()
-        // {   
-        //     ConsoleKey key;
-        //     do
-        //     {
-        //         key = StartGame();
-        //         // Разбить на отдельные методы
-        //         if (IsGameOver)
-        //         {
-        //             Console.Clear();
-        //             Console.WriteLine("GAME OVER!");
-        //             break;
-        //         }
-
-        //         if (key == ConsoleKey.Enter)
-        //         {
-        //             Console.Clear();
-        //             Console.WriteLine("You exited the game!");
-        //             break;
-        //         }
-
-        //         ConsoleKey answer;
-        //         do 
-        //         {
-        //             Console.Clear();
-        //             Console.Write("Continue to next level?\ny/n : ");
-        //             answer = Console.ReadKey().Key;
-        //         } while ((answer != ConsoleKey.Y) && (answer != ConsoleKey.N));
-
-        //         if (answer == ConsoleKey.Y)
-        //             UpToNextLevel();
-        //         else if (answer == ConsoleKey.N)
-        //             break;
-
-        //     } while (key != ConsoleKey.Enter);
-        // }
     }
 }

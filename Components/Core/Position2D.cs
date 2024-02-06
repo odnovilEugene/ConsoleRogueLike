@@ -7,8 +7,8 @@ namespace RogueLike.Components.Core
     // Писать операторы через =>
     public struct Position2D
     {
-        public int Y { get; set; }
         public int X { get; set; }
+        public int Y { get; set; }
 
         public readonly bool InBound => X > 0 && X < Map.Width - 1 && Y > 0 && Y < Map.Height - 1;
 

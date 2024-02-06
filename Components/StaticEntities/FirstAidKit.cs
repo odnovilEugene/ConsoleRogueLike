@@ -18,5 +18,10 @@ namespace RogueLike.Components.StaticObjects
             IsPassable = true;
             HealAmount = healAmount;
         }
+
+        public void SelfDestruct()
+        {
+            Map.Instance[Position] = new Empty(Position);
+        }
     }
 }

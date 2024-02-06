@@ -1,4 +1,5 @@
 using RogueLike.Components.Core;
+using RogueLike.Components.StaticObjects;
 using RogueLike.Interfaces.Objects;
 
 namespace RogueLike.Components.MovingGameObject
@@ -20,11 +21,74 @@ namespace RogueLike.Components.MovingGameObject
             Game.OnTurn += Move;
         }
 
-        public void Move() {}
+        public (int, int) ChooseDirection()
+        {
+            Position2D playerPos = Game.Instance.Player.Position;
+            (int dy, int dx) = (0, 0);
+            if (Position.Y == playerPos.Y)
+            {
+                (dy, dx) = Position.X - playerPos.X > 0 ? (-1, 0) : (1, 0);
+                Position2D tempPos = Position;
+                Position2D tempPlayerPos = playerPos;
+                do
+                {
+                    tempPos.X += dx;
+                    if (Map.Instance[tempPos] is not Empty)
+                        return (0, 0);
+                } while (tempPos != tempPlayerPos);
+                return (dy, dx);
+            }
+            else if (Position.X == playerPos.X)
+            {
+                (dy, dx) = Position.Y - playerPos.Y > 0 ? (0, -1) : (0, 1);
+                Position2D tempPos = Position;
+                Position2D tempPlayerPos = playerPos;
+                do
+                {
+                    tempPos.Y += dy;
+                    if (Map.Instance[tempPos] is not Empty)
+                        return (0, 0);
+                } while (tempPos != tempPlayerPos);
+                return (dy, dx);
+            }
+            return (dy, dx);
+        }
+
+        public void Move() 
+        {
+            (int dy, int dx) = ChooseDirection();
+            if ((dy, dx) != (0, 0))
+            {
+                Position2D newPos = new(Position.Y + dy, Position.X + dx);
+                var objectOnCell = Map.Instance[newPos];
+                switch (objectOnCell)
+                {
+                    case IStaticGameObject staticObject:
+                        if (staticObject.IsPassable)
+                        {
+                            if (staticObject is FirstAidKit aidKit)
+                                aidKit.SelfDestruct();
+                            else
+                            {
+                                Map.Instance[newPos] = new Projectile(newPos, (dy, dx));
+                            }
+                        }
+                        break;
+                    case ILivingGameObject livingGameObject:
+                        livingGameObject.TakeDamage(Attack);
+                        break;
+                }
+            }
+        }
 
         public void TakeDamage(int amount)
         {
-            Hp -= amount;   
+            Hp -= amount;
+            if (IsDead)
+            {
+                Game.Instance.Enemies.Remove(Position);
+                Map.Instance[Position] = new Empty(Position);
+            } 
         }
 
         public override string ToString()

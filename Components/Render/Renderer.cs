@@ -1,27 +1,32 @@
 using RogueLike.Components.Core;
+using RogueLike.Interfaces.Objects;
 
 namespace RogueLike.Components.Render
 {
     public class Renderer
     {
-        public static void PrintGame(Game game)
+        public static void PrintGame()
         {
-            var map = Map.Instance;
             Console.Clear();
-            Console.WriteLine($"Level : {game.Level}");
-            Console.WriteLine(map);
-            game.Player.GetInfo();
-            // TODO: понять как выводить информацию о противниках не храня ее в отдельном списке
-            // 1: Пробегать по всей карте и если это объект, который двигается - добавлять информацию о нем в массив с инфой в этом компоненте
-            // PrintInfo(player, enemies);
+            Console.WriteLine($"Level : {Game.Instance.Level}");
+            Console.WriteLine(Map.Instance);
+            
+            // for(int i = 0; i < 3; i++)
+            // {
+            //     for (int j = 0; j < 3; j++)
+            //     {
+            //         Console.Write(Map.Instance[j, i]);
+            //     }
+            //     Console.WriteLine();
+            // }
         }
-        // public static void PrintInfo(Player player, List<IMovingGameObject> enemies)
-        // {
-        //     Console.WriteLine(player.GetInfo());
-        //     foreach (var enemy in enemies)
-        //     {
-        //         Console.WriteLine(enemy.GetInfo());
-        //     }
-        // }
+        public static void PrintInfo()
+        {
+            Console.WriteLine(Game.Instance.Player.GetInfo());
+            foreach (KeyValuePair<Position2D, ILivingGameObject> enemy in Game.Instance.Enemies)
+            {
+                Console.WriteLine(enemy.Value.GetInfo());
+            }
+        }
     }
 }
