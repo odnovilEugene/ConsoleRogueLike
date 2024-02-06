@@ -47,10 +47,10 @@ namespace RogueLike.Components.Core
             Player.Position = startCorner ? MapSettings.start : MapSettings.finish;
             Map.Instance[Player.Position] = Player;
 
-            Range heightR = startCorner ? new(3, MapHeight - 1) : new(0, MapHeight - 4);
             Range widthR = startCorner ? new(3, MapWidth - 1) : new(3, MapWidth - 4);
-            GenerateEnemies(enemiesNumber, heightR, widthR);
-            GenerateProps(propNumber, heightR, widthR);
+            Range heightR = startCorner ? new(3, MapHeight - 1) : new(0, MapHeight - 4);
+            GenerateEnemies(enemiesNumber, widthR, heightR);
+            GenerateProps(propNumber, widthR, heightR);
         }
 
         public static void RenderGame()
@@ -58,7 +58,7 @@ namespace RogueLike.Components.Core
             Renderer.PrintGame();
         }
 
-        private void GenerateEnemies(int n, Range yR, Range xR)
+        private void GenerateEnemies(int n, Range xR, Range yR)
         {
             int counter = 0;
             while (EnemiesCount < n)
@@ -70,14 +70,14 @@ namespace RogueLike.Components.Core
                 }
                 // Вынести в отдельные переменные либо создать отдельный метод (GetRandom), возвращаюший рандомную позицию
                 // В методе использовать Range height, width и Random.Shared
-                Position2D enemyPos = Position2D.GetRandom(yR, xR);
+                Position2D enemyPos = Position2D.GetRandom(xR, yR);
                 int y = enemyPos.Y;
                 int x = enemyPos.X;
-                if (Map.Instance[y, x] is Empty)
+                if (Map.Instance[x, y] is Empty)
                 {
                     // Использовать тернарник
                     Enemies.Add(enemyPos, (Random.Shared.Next(0, 100) % 2 == 0) ? new Zombie(enemyPos) : new Shooter(enemyPos));
-                    Map.Instance[y, x] = (GameObject)Enemies[enemyPos];
+                    Map.Instance[x, y] = (GameObject)Enemies[enemyPos];
                     EnemiesCount++;
                 }
                 counter++;
@@ -86,7 +86,7 @@ namespace RogueLike.Components.Core
 
 
         // Тоже, что и выше
-        private void GenerateProps(int n, Range yR, Range xR)
+        private void GenerateProps(int n, Range xR, Range yR)
         {
             int counter = 0;
             while (PropsCount < n)
@@ -96,13 +96,13 @@ namespace RogueLike.Components.Core
                     Console.WriteLine("No place for enemies");
                     break;
                 }
-                Position2D propPos = Position2D.GetRandom(yR, xR);
+                Position2D propPos = Position2D.GetRandom(xR, yR);
                 int y = propPos.Y;
                 int x = propPos.X;
-                if (Map.Instance[y, x] is Empty)
+                if (Map.Instance[x, y] is Empty)
                 {
                     // Использовать тернарник
-                    Map.Instance[y, x] = new FirstAidKit(propPos);
+                    Map.Instance[x, y] = new FirstAidKit(propPos);
                     PropsCount++;
                 }
                 counter++;
@@ -168,8 +168,10 @@ namespace RogueLike.Components.Core
                     } while ((answer != PlayerInput.AcceptKey) && (answer != PlayerInput.RejectKey));
 
                     if (answer == PlayerInput.AcceptKey)
-                        Initialize(Level % 2 != 0);
+                        Initialize(Level % 2 == 0);
                     else if (answer == PlayerInput.RejectKey)
+                        Console.Clear();
+                        Console.Write("You exited the game!");
                         break;
                 }
             } while (PlayerInput.DirectionToInput(direction) != PlayerInput.BreakKey);
@@ -178,7 +180,7 @@ namespace RogueLike.Components.Core
         private void MakeTurn((int, int) direction)
         {   
             Player.Move(direction);
-            OnTurn();
+            OnTurn?.Invoke();
         }
     }
 }

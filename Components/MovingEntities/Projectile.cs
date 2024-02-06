@@ -25,8 +25,8 @@ namespace RogueLike.Components.MovingGameObject
         public (int, int) ChooseDirection() => Direction;
 
         public void Move() {
-            (int dy, int dx) = ChooseDirection();
-            Position2D newPos = new(Position.Y + dy, Position.X + dx);
+            (int dx, int dy) = ChooseDirection();
+            Position2D newPos = new(Position.X + dx, Position.Y + dy);
             var objectOnCell = Map.Instance[newPos];
             switch (objectOnCell)
             {

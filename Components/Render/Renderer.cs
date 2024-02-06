@@ -10,15 +10,7 @@ namespace RogueLike.Components.Render
             Console.Clear();
             Console.WriteLine($"Level : {Game.Instance.Level}");
             Console.WriteLine(Map.Instance);
-            
-            // for(int i = 0; i < 3; i++)
-            // {
-            //     for (int j = 0; j < 3; j++)
-            //     {
-            //         Console.Write(Map.Instance[j, i]);
-            //     }
-            //     Console.WriteLine();
-            // }
+            PrintInfo();
         }
         public static void PrintInfo()
         {

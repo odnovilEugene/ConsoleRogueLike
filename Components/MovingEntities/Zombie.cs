@@ -24,10 +24,10 @@ namespace RogueLike.Components.MovingGameObject
         public (int, int) ChooseDirection()
         {
             Position2D playerPos = Game.Instance.Player.Position;
-            (int dy, int dx) = (0, 0);
+            (int dx, int dy) = (0, 0);
             if (Position.Y == playerPos.Y)
             {
-                (dy, dx) = Position.X - playerPos.X > 0 ? (-1, 0) : (1, 0);
+                (dx, dy) = Position.X - playerPos.X > 0 ? (-1, 0) : (1, 0);
                 Position2D tempPos = Position;
                 Position2D tempPlayerPos = playerPos;
                 do
@@ -36,22 +36,22 @@ namespace RogueLike.Components.MovingGameObject
                     if (Map.Instance[tempPos] is not Empty)
                         return (0, 0);
                 } while (tempPos != tempPlayerPos);
-                return (dy, dx);
+                return (dx, dy);
             }
             else if (Position.X == playerPos.X)
             {
-                (dy, dx) = Position.Y - playerPos.Y > 0 ? (0, -1) : (0, 1);
+                (dx, dy) = Position.Y - playerPos.Y > 0 ? (0, -1) : (0, 1);
                 Position2D tempPos = Position;
                 Position2D tempPlayerPos = playerPos;
                 do
                 {
                     tempPos.Y += dy;
-                    if (Map.Instance[tempPos] is not Empty)
+                    if (!(Map.Instance[tempPos] is IStaticGameObject staticObject && !staticObject.IsPassable))
                         return (0, 0);
                 } while (tempPos != tempPlayerPos);
-                return (dy, dx);
+                return (dx, dy);
             }
-            return (dy, dx);
+            return (dx, dy);
         }
 
         public void Move() 

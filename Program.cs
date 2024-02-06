@@ -11,10 +11,7 @@ namespace RogueLike
         {
             // Реструктурировать файлы, только Program вверху
 
-            // Game.Instance.GameLoop();
-            GameObject a = Map.Instance[0, 0];
-            Game.RenderGame();
-
+            Game.Instance.GameLoop();
         }
     }
 }

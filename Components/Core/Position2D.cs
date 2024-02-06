@@ -12,33 +12,33 @@ namespace RogueLike.Components.Core
 
         public readonly bool InBound => X > 0 && X < Map.Width - 1 && Y > 0 && Y < Map.Height - 1;
 
-        public Position2D(int y, int x)
+        public Position2D(int x, int y)
         {
-            Y = y;
             X = x;
+            Y = y;
         }
 
         public Position2D(Position2D pos)
         {
-            Y = pos.Y;
             X = pos.X;
+            Y = pos.Y;
         }
         
         public static bool operator ==(Position2D a, Position2D b) => (a.Y == b.Y) && (a.X == b.X);
 
         public static bool operator !=(Position2D a, Position2D b) => (a.Y != b.Y) || (a.X != b.X);
 
-        public static bool operator ==(Position2D a, (int, int) coords) => (coords.Item1 == a.Y) && (coords.Item2 == a.X);
+        public static bool operator ==(Position2D a, (int, int) coords) => (coords.Item1 == a.X) && (coords.Item2 == a.Y);
 
-        public static bool operator !=(Position2D a, (int, int) coords) => (coords.Item1 != a.Y) || (coords.Item2 != a.X);
+        public static bool operator !=(Position2D a, (int, int) coords) => (coords.Item1 != a.X) || (coords.Item2 != a.Y);
 
-        public static Position2D GetRandom(Range y, Range x)
+        public static Position2D GetRandom(Range x, Range y)
         {
-            int randY = Random.Shared.Next(y.Start.Value, y.End.Value);
             int randX = Random.Shared.Next(x.Start.Value, x.End.Value);
-            return new Position2D(randY, randX);
+            int randY = Random.Shared.Next(y.Start.Value, y.End.Value);
+            return new Position2D(randX, randY);
         }
 
-        public override string ToString() => $"({Y}, {X})";
+        public override string ToString() => $"({X}, {Y})";
     }
 }

@@ -31,7 +31,7 @@ namespace RogueLike.Components.Core
             {
                 for (int x = 0; x < Width; x++)
                 {
-                    stringMap += this[y, x];
+                    stringMap += this[x, y];
                 }
                 stringMap += "\n";
             }
@@ -40,11 +40,11 @@ namespace RogueLike.Components.Core
     
         // Индексаторы для Map
         public GameObject this [Position2D pos] {
-            get => Field[pos.Y, pos.X];
-            set => Field[pos.Y, pos.X] = value;
+            get => Field[pos.X, pos.Y];
+            set => Field[pos.X, pos.Y] = value;
         }
 
-        public GameObject this [int y, int x] {
+        public GameObject this [int x, int y] {
             get => Field[x, y];
             set => Field[x, y] = value;
         }

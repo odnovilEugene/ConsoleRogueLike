@@ -19,6 +19,6 @@ namespace RogueLike.Settings
         internal const int Width = 25;
         internal const int Seed = -1;
         internal static Position2D start = new(1, 1);
-        internal static Position2D finish = new(Height - 2, Width - 2);
+        internal static Position2D finish = new(Width - 2, Height - 2);
     }
 }

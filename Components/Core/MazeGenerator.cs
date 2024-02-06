@@ -38,7 +38,7 @@ namespace RogueLike.Components
                 for (int x = 0; x < _width; x++)
                 {
                     var pos = new Position2D(x, y);
-                    if (_data[x, y] == WallSymbol)   
+                    if (_data[x, y] == WallSymbol)
                     {                 
                         gameObjectMaze[x, y] = new Wall(pos);
                     }

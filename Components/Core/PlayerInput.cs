@@ -40,10 +40,10 @@ namespace RogueLike.Components.Core
         {
             return direction switch
             {
-                (-1,0) => MoveUpKey,
-                (0,-1) => MoveLeftKey,
-                (1, 0) => MoveDownKey,
-                (0, 1) => MoveRightKey,
+                (0,-1) => MoveUpKey,
+                (-1,0) => MoveLeftKey,
+                (0, 1) => MoveDownKey,
+                (1, 0) => MoveRightKey,
                 _ => BreakKey
             };
         }
