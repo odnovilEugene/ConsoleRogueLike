@@ -32,6 +32,18 @@ namespace RogueLike.Components.Core
 
         public static bool operator !=(Position2D a, (int, int) coords) => (coords.Item1 != a.X) || (coords.Item2 != a.Y);
 
+        public override readonly bool Equals(object obj)
+        {
+            return obj is Position2D pos &&
+                   X == pos.X &&
+                   Y == pos.Y;
+        }
+
+        public override readonly int GetHashCode()
+        {
+            return HashCode.Combine(X, Y);
+        }
+
         public static Position2D GetRandom(Range x, Range y)
         {
             int randX = Random.Shared.Next(x.Start.Value, x.End.Value);
@@ -39,6 +51,6 @@ namespace RogueLike.Components.Core
             return new Position2D(randX, randY);
         }
 
-        public override string ToString() => $"({X}, {Y})";
+        public override readonly string ToString() => $"({X}, {Y})";
     }
 }

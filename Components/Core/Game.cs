@@ -28,11 +28,6 @@ namespace RogueLike.Components.Core
         {
             Player = new Player(MapSettings.start);
             Initialize();
-            // Назвать Props
-            // StaticObjects = GenerateStaticObjects(Map.Width / 8);
-            // Подписывать каждый проджектайл на событие, которое вызывалось бы каждый ход
-            // Projectiles = new List<Projectile>();
-            
         }
 
         private void Initialize(bool startCorner = true)
@@ -43,6 +38,8 @@ namespace RogueLike.Components.Core
 
             int enemiesNumber = MapWidth / 8 + Level;
             int propNumber = (MapWidth / 8) - Level >= 1 ? (MapWidth / 8) - Level : 1;
+
+            Map.Instance.Field = Map.Instance.MazeGenerator.Generate(MapSettings.start, MapSettings.finish);
 
             Map.Instance[Player.Position] = new Empty(Player.Position);
             Player.Position = startCorner ? MapSettings.start : MapSettings.finish;
@@ -69,14 +66,11 @@ namespace RogueLike.Components.Core
                     Console.WriteLine("No place for enemies");
                     break;
                 }
-                // Вынести в отдельные переменные либо создать отдельный метод (GetRandom), возвращаюший рандомную позицию
-                // В методе использовать Range height, width и Random.Shared
                 Position2D enemyPos = Position2D.GetRandom(xR, yR);
                 int y = enemyPos.Y;
                 int x = enemyPos.X;
                 if (Map.Instance[x, y] is Empty)
                 {
-                    // Использовать тернарник
                     Enemies.Add(enemyPos, (Random.Shared.Next(0, 100) % 2 == 0) ? new Zombie(enemyPos) : new Shooter(enemyPos));
                     Map.Instance[x, y] = (GameObject)Enemies[enemyPos];
                     EnemiesCount++;
@@ -85,8 +79,6 @@ namespace RogueLike.Components.Core
             }
         }
 
-
-        // Тоже, что и выше
         private void GenerateProps(int n, Range xR, Range yR)
         {
             int counter = 0;
@@ -109,18 +101,6 @@ namespace RogueLike.Components.Core
                 counter++;
             }
         }
-       
-
-       // Сделать метод генерейт, чтобы объединить метод инициализации и UpToNextLevel
-        private void UpToNextLevel()
-        {
-            // Level++;
-            // Player.Position = new Position2D(1, 1);
-            // Map = new Map(InitialDepth, InitialWidth, -1);
-            // Enemies = GenerateEnemies(Map.Width / 3);
-            // StaticObjects = GenerateStaticObjects(Map.Width / 8);
-            // Projectiles.Clear();
-        }
 
 
         private (int, int) LevelLoop()
@@ -129,7 +109,6 @@ namespace RogueLike.Components.Core
             RenderGame();
             do
             {
-                // Отойти от консоли, сделать свою абстракцию Action, чтобы при изменении типа инпута нужно было переписывать только свою абстракцию, а не все строчки, где вызывается этот инпут
                 direction = PlayerInput.ReadMoveInput();
                 MakeTurn(direction);
                 RenderGame();
@@ -147,14 +126,12 @@ namespace RogueLike.Components.Core
 
                 if (PlayerInput.DirectionToInput(direction) == PlayerInput.BreakKey)
                 {
-                    // Console.Clear();
                     Console.WriteLine("You exited the game!");
                     break;
                 }
 
                 if (IsGameOver)
                 {
-                    // Console.Clear();
                     Console.WriteLine("GAME OVER!");
                     break;
                 }
@@ -172,7 +149,6 @@ namespace RogueLike.Components.Core
                         Initialize(Level % 2 == 0);
                     else if (answer == PlayerInput.RejectKey)
                     {
-                        // Console.Clear();
                         Console.Write("You exited the game!");
                         break;
                     }

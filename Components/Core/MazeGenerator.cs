@@ -3,6 +3,7 @@ using RogueLike.Components.Core;
 using RogueLike.Components.StaticObjects;
 using static RogueLike.Utils.Utils;
 using static RogueLike.Settings.ObjectSymbols;
+using RogueLike.Settings;
 
 namespace RogueLike.Components
 {
@@ -11,18 +12,19 @@ namespace RogueLike.Components
         private readonly char[,] _data;
         private readonly int _width;
         private readonly int _height;
-        private readonly Random _random;
+        private Random _random;
 
-        public MazeGenerator(int width, int height, int seed)
+        public MazeGenerator(int width, int height)
         {
+            _random = new Random(MapSettings.Seed != -1 ? MapSettings.Seed : (int)DateTime.Now.Ticks);
             _width = width;
             _height = height;
-            _random = new Random(seed);
             _data = new char[_width, _height];
         }
 
         public GameObject[,] Generate(Position2D start, Position2D finish)
         {
+            _random = new Random(MapSettings.Seed != -1 ? MapSettings.Seed : (int)DateTime.Now.Ticks);
             Initialize();
             GenerateMaze(start.X, start.Y);
             MakeAccessible(finish);
