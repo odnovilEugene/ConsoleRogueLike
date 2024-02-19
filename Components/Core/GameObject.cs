@@ -4,7 +4,7 @@ namespace RogueLike.Components.Core
 {
     public abstract class GameObject : IGameObject
     {
-        public Position2D Position { get; set; }
+        public Vector2 Position { get; set; }
 
         public char Symbol { get; protected set; }
 

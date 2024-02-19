@@ -1,3 +1,5 @@
+using System.Runtime.Remoting;
+using RogueLike.Components.StaticObjects;
 using RogueLike.Interfaces.Objects;
 using RogueLike.Settings;
 
@@ -10,7 +12,6 @@ namespace RogueLike.Components.Core
         private static readonly Lazy<Map> lazy = new(() => new Map());
 
         public static Map Instance { get { return lazy.Value; } }
-
         public static int Height { get; } = MapSettings.Height;
         public static int Width { get; } = MapSettings.Width;
         public GameObject[,] Field { get; set; }
@@ -20,6 +21,22 @@ namespace RogueLike.Components.Core
         {
             MazeGenerator = new MazeGenerator(Width, Height);
             Field = MazeGenerator.Generate(MapSettings.start, MapSettings.finish);
+        }
+
+        public void MoveGameObject(GameObject obj, Vector2 pos)
+        {
+            this[obj.Position] = new Empty(obj.Position);
+            this[pos] = obj;
+        }
+
+        public void RemoveGameObject(GameObject obj)
+        {
+            this[obj.Position] = new Empty(obj.Position);
+        }
+
+        public void AddGameObject(GameObject obj)
+        {
+            this[obj.Position] = obj;
         }
         
         public override string ToString()
@@ -37,7 +54,7 @@ namespace RogueLike.Components.Core
         }
     
         // Индексаторы для Map
-        public GameObject this [Position2D pos] {
+        public GameObject this [Vector2 pos] {
             get => Field[pos.X, pos.Y];
             set => Field[pos.X, pos.Y] = value;
         }

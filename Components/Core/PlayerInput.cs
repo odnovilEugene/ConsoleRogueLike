@@ -18,13 +18,13 @@ namespace RogueLike.Components.Core
             return key;
         }
 
-        public static (int, int) ReadMoveInput() {
+        public static Vector2 ReadMoveInput() {
             ConsoleKey key = Console.ReadKey().Key;
-            (int, int) direction = InputToDirection(key);
+            Vector2 direction = InputToDirection(key);
             return direction;
         }
 
-        private static (int, int) InputToDirection(ConsoleKey key)
+        private static Vector2 InputToDirection(ConsoleKey key)
         {
             return key switch
             {
@@ -36,7 +36,7 @@ namespace RogueLike.Components.Core
             };
         }
 
-        public static ConsoleKey DirectionToInput((int, int) direction)
+        public static ConsoleKey DirectionToInput(Vector2 direction)
         {
             return direction switch
             {
@@ -48,7 +48,7 @@ namespace RogueLike.Components.Core
             };
         }
 
-        public static bool AcceptableInput((int, int) direction)
+        public static bool AcceptableInput(Vector2 direction)
         {
             return direction switch
             {

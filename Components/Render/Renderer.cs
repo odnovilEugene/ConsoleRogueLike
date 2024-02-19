@@ -15,7 +15,7 @@ namespace RogueLike.Components.Render
         public static void PrintInfo()
         {
             Console.WriteLine(Game.Instance.Player.GetInfo());
-            foreach (KeyValuePair<Position2D, ILivingGameObject> enemy in Game.Instance.Enemies)
+            foreach (var enemy in Game.Instance.Enemies)
             {
                 Console.WriteLine(enemy.Value.GetInfo());
             }

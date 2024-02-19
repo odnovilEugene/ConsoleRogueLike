@@ -19,15 +19,14 @@ namespace RogueLike.Components.Core
 
         public static event Action? OnTurn;
 
-        public Dictionary<Position2D, ILivingGameObject> Enemies { get; } = new();
-        private bool IsGameOver => Player.Hp <= 0;
+        public Dictionary<Vector2, ILivingGameObject> Enemies { get; } = new();
+        private bool IsGameOver => Player.IsDead;
         private bool LevelDone => Enemies.Count == 0;        
 
         // Значение по умолчанию
         public Game()
         {
             Player = new Player(MapSettings.start);
-            Initialize();
         }
 
         private void Initialize(bool startCorner = true)
@@ -59,53 +58,56 @@ namespace RogueLike.Components.Core
         private void GenerateEnemies(int n, Range xR, Range yR)
         {
             int counter = 0;
-            while (EnemiesCount < n)
+            int enemiesCount = 0;
+            while (enemiesCount < n)
             {
                 if (counter > 100)
                 {
                     Console.WriteLine("No place for enemies");
                     break;
                 }
-                Position2D enemyPos = Position2D.GetRandom(xR, yR);
-                int y = enemyPos.Y;
-                int x = enemyPos.X;
-                if (Map.Instance[x, y] is Empty)
+                Vector2 enemyPos = Vector2.GetRandom(xR, yR);
+
+                if (Map.Instance[enemyPos] is Empty)
                 {
                     Enemies.Add(enemyPos, (Random.Shared.Next(0, 100) % 2 == 0) ? new Zombie(enemyPos) : new Shooter(enemyPos));
-                    Map.Instance[x, y] = (GameObject)Enemies[enemyPos];
-                    EnemiesCount++;
+                    Map.Instance[enemyPos] = (GameObject)Enemies[enemyPos];
+                    enemiesCount++;
                 }
                 counter++;
             }
+        }
+
+        public void RemoveEnemy(GameObject obj)
+        {
+            Enemies.Remove(obj.Position);
         }
 
         private void GenerateProps(int n, Range xR, Range yR)
         {
             int counter = 0;
-            while (PropsCount < n)
+            int propsCount = 0;
+            while (propsCount < n)
             {
                 if (counter > 100)
                 {
-                    Console.WriteLine("No place for enemies");
+                    Console.WriteLine("No place for props");
                     break;
                 }
-                Position2D propPos = Position2D.GetRandom(xR, yR);
-                int y = propPos.Y;
-                int x = propPos.X;
-                if (Map.Instance[x, y] is Empty)
+                Vector2 propPos = Vector2.GetRandom(xR, yR);
+                if (Map.Instance[propPos] is Empty)
                 {
-                    // Использовать тернарник
-                    Map.Instance[x, y] = new FirstAidKit(propPos);
-                    PropsCount++;
+                    Map.Instance[propPos] = new FirstAidKit(propPos);
+                    propsCount++;
                 }
                 counter++;
             }
         }
 
 
-        private (int, int) LevelLoop()
+        private Vector2 LevelLoop()
         {
-            (int, int) direction;
+            Vector2 direction;
             RenderGame();
             do
             {
@@ -119,7 +121,8 @@ namespace RogueLike.Components.Core
 
         public void GameLoop()
         {
-            (int, int) direction;
+            Initialize();
+            Vector2 direction;
             do
             {
                 direction = LevelLoop();
@@ -156,7 +159,7 @@ namespace RogueLike.Components.Core
             } while (PlayerInput.DirectionToInput(direction) != PlayerInput.BreakKey);
         }
 
-        private void MakeTurn((int, int) direction)
+        private void MakeTurn(Vector2 direction)
         {   
             Player.Move(direction);
             OnTurn?.Invoke();

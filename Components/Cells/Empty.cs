@@ -10,7 +10,7 @@ namespace RogueLike.Components.StaticObjects
         public bool IsPassable { get; }
         
 
-        public Empty(Position2D pos)
+        public Empty(Vector2 pos)
         {
             Position = pos;
             Symbol = EmptyCellSymbol;

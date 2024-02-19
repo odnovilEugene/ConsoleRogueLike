@@ -1,4 +1,5 @@
 using RogueLike.Components.Core;
+using RogueLike.Components.ObjectProps;
 using RogueLike.Components.StaticObjects;
 using RogueLike.Interfaces.Objects;
 
@@ -6,24 +7,25 @@ namespace RogueLike.Components.MovingGameObject
 {
     public class Player : GameObject, ILivingGameObject
     {
-        public int MaxHp { get; }
-        public int Hp { get; private set; }
         public int Attack { get; }
-        public bool IsDead { get => Hp <= 0; }
+        public bool IsDead { get => Health.Hp <= 0; }
+        public Health Health { get; private set; }
 
-        public Player(Position2D pos)
+        public Player(Vector2 pos)
         {
             Position = pos;
             Symbol = Settings.ObjectSymbols.PlayerSymbol;
-            MaxHp = 10;
-            Hp = MaxHp;
+            Health = new(10, 10);
             Attack = 2;
+            OnMove += Map.Instance.MoveGameObject;
         }
 
-        public void Move((int, int) direction) 
+        public event Action<GameObject>? OnDeath;
+        public event Action<GameObject, Vector2>? OnMove;
+
+        public void Move(Vector2 direction) 
         {
-            (int dx, int dy) = direction;
-            Position2D newPos = new(Position.X + dx, Position.Y + dy);
+            Vector2 newPos = new(Position + direction);
             var objectOnCell = Map.Instance[newPos];
             switch (objectOnCell)
             {
@@ -51,31 +53,24 @@ namespace RogueLike.Components.MovingGameObject
 
         public void TakeDamage(int amount)
         {
-            Hp -= amount;
+            Health -= amount;
         }
 
         private void Heal(int amount)
         {
-            int newHp = Hp + amount;
-            Hp = MaxHp <= newHp ? MaxHp : newHp;
-        }
-
-        public override string ToString()
-        {
-            return Symbol.ToString();
+            Health += amount;
         }
 
         public string GetInfo()
         {
             var className = GetType().Name;
-            return $"{className}: Hp {Hp} / {MaxHp}, Position: {Position}";
+            return $"{className}: Hp {Health}, Position: {Position}";
         }
 
         public void Die() {}
-        public void ChangePosition(Position2D newPosition) 
+        public void ChangePosition(Vector2 newPosition) 
         {
-            Map.Instance[Position] = new Empty(Position);
-            Map.Instance[newPosition] = this;
+            OnMove?.Invoke(this, newPosition);
             Position = newPosition;
         }
     }

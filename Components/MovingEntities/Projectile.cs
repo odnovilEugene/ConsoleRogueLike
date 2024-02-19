@@ -7,28 +7,35 @@ namespace RogueLike.Components.MovingGameObject
     public class Projectile : GameObject, IMovingGameObject
     {
         private int Damage { get; }
-        private (int, int) Direction { get; }
+        private Vector2 Direction { get; }
 
-        public Projectile(Position2D pos, (int, int) direction)
+        public Projectile(Vector2 pos, Vector2 direction)
         {
             Position = pos;
             Symbol = Settings.ObjectSymbols.ProjectileSymbol;
             Damage = 1;
             Direction = direction;
             Game.OnTurn += Move;
+            OnBlowUp += Map.Instance.RemoveGameObject;
+            OnMove += Map.Instance.MoveGameObject;
         }
+
+        public event Action<GameObject>? OnBlowUp;
+        public event Action<GameObject, Vector2>? OnMove;
 
         public void BlowUp()
         {
+            OnBlowUp?.Invoke(this);
             Game.OnTurn -= Move;
-            Map.Instance[Position] = new Empty(Position);
+            OnBlowUp -= Map.Instance.RemoveGameObject;
+            OnMove -= Map.Instance.MoveGameObject;
         }
 
-        public (int, int) ChooseDirection() => Direction;
+        public Vector2 ChooseDirection() => Direction;
 
         public void Move() {
-            (int dx, int dy) = ChooseDirection();
-            Position2D newPos = new(Position.X + dx, Position.Y + dy);
+            Vector2 direction = ChooseDirection();
+            Vector2 newPos = new(Position + direction);
             var objectOnCell = Map.Instance[newPos];
             switch (objectOnCell)
             {
@@ -42,8 +49,7 @@ namespace RogueLike.Components.MovingGameObject
                         }
                         else
                         {
-                            Map.Instance[newPos] = this;
-                            Map.Instance[Position] = new Empty(Position);
+                            OnMove?.Invoke(this, newPos);
                             Position = newPos;
                         }
                     }

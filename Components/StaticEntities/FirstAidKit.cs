@@ -11,7 +11,7 @@ namespace RogueLike.Components.StaticObjects
 
         public int HealAmount { get; }
 
-        public FirstAidKit(Position2D pos, int healAmount = 5)
+        public FirstAidKit(Vector2 pos, int healAmount = 5)
         {
             Position = pos;
             Symbol = FirstAidKitSymbol;

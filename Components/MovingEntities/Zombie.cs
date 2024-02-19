@@ -1,4 +1,5 @@
 using RogueLike.Components.Core;
+using RogueLike.Components.ObjectProps;
 using RogueLike.Components.StaticObjects;
 using RogueLike.Interfaces.Objects;
 
@@ -6,60 +7,64 @@ namespace RogueLike.Components.MovingGameObject
 {
     public class Zombie : GameObject, IMovingGameObject, ILivingGameObject
     {
-        public int MaxHp { get; }
-        public int Hp { get; private set; }
         public int Attack { get; }
-        public bool IsDead { get => Hp <= 0; }
+        public bool IsDead { get => Health.Hp <= 0; }
+        public Health Health { get; private set; }
 
-        public Zombie(Position2D pos)
+        public Zombie(Vector2 pos)
         {
             Position = pos;
             Symbol = Settings.ObjectSymbols.ZombieSymbol;
-            MaxHp = 3;
-            Hp = MaxHp;
+            Health = new(3, 3);
             Attack = 1;
             Game.OnTurn += Move;
+            OnDeath += Game.Instance.RemoveEnemy;
+            OnDeath += Map.Instance.RemoveGameObject;
+            OnMove += Map.Instance.MoveGameObject;
         }
 
-        public (int, int) ChooseDirection()
+        public event Action<GameObject>? OnDeath;
+        public event Action<GameObject, Vector2>? OnMove;
+
+        public Vector2 ChooseDirection()
         {
-            Position2D playerPos = Game.Instance.Player.Position;
-            (int dx, int dy) = (0, 0);
+            Vector2 playerPos = Game.Instance.Player.Position;
+            Vector2 direction = (0, 0);
             if (Position.Y == playerPos.Y)
             {
-                (dx, dy) = Position.X - playerPos.X > 0 ? (-1, 0) : (1, 0);
-                Position2D tempPos = Position;
-                Position2D tempPlayerPos = playerPos;
+                direction = Position.X - playerPos.X > 0 ? (-1, 0) : (1, 0);
+                Vector2 tempPos = Position;
+                Vector2 tempPlayerPos = playerPos;
                 while (Math.Abs(tempPos.X - tempPlayerPos.X) > 1)
                 {
-                    tempPos.X += dx;
+                    tempPos.X += direction.X;
                     if (Map.Instance[tempPos] is not Empty)
                         return (0, 0);
                 }
-                return (dx, dy);
+                return direction;
             }
             else if (Position.X == playerPos.X)
             {
-                (dx, dy) = Position.Y - playerPos.Y > 0 ? (0, -1) : (0, 1);
-                Position2D tempPos = Position;
-                Position2D tempPlayerPos = playerPos;
+                direction = Position.Y - playerPos.Y > 0 ? (0, -1) : (0, 1);
+                Vector2 tempPos = Position;
+                Vector2 tempPlayerPos = playerPos;
                 while (Math.Abs(tempPos.Y - tempPlayerPos.Y) > 1)
                 {
-                    tempPos.Y += dy;
+                    tempPos.Y += direction.Y;
                     if (Map.Instance[tempPos] is not Empty)
                         return (0, 0);
                 }
-                return (dx, dy);
+                return direction;
             }
-            return (dx, dy);
+            return direction;
         }
 
         public void Move() 
         {
-            (int dx, int dy) = ChooseDirection();
-            if ((dx, dy) != (0, 0))
+            Vector2 direction = ChooseDirection();
+            if (direction != (0, 0))
             {
-                Position2D newPos = new(Position.X + dx, Position.Y + dy);
+                Vector2 newPos = new(Position + direction);
                 var objectOnCell = Map.Instance[newPos];
                 switch (objectOnCell)
                 {
@@ -80,37 +85,34 @@ namespace RogueLike.Components.MovingGameObject
 
         public void TakeDamage(int amount)
         {
-            Hp -= amount;
+            Health -= amount;
             if (IsDead)
             {
+                OnDeath?.Invoke(this);
                 Die();
             }
-        }
-
-        public override string ToString()
-        {
-            return Symbol.ToString();
         }
 
         public string GetInfo()
         {
             var className = GetType().Name;
-            return $"{className}: Hp {Hp} / {MaxHp}, Position: {Position}";
+            return $"{className}: Hp {Health}, Position: {Position}";
         }
 
         public void Die()
         {
             Game.OnTurn -= Move;
-            Game.Instance.Enemies.Remove(Position);
-            Map.Instance[Position] = new Empty(Position);
+            OnDeath -= Game.Instance.RemoveEnemy;
+            OnDeath -= Map.Instance.RemoveGameObject;
+            OnMove -= Map.Instance.MoveGameObject;
         }
 
-        public void ChangePosition(Position2D newPosition)
+        // Придумать как менять позицию у врага в словаре
+        public void ChangePosition(Vector2 newPosition)
         {
             Game.Instance.Enemies.Remove(Position);
             Game.Instance.Enemies.Add(newPosition, this);
-            Map.Instance[Position] = new Empty(Position);
-            Map.Instance[newPosition] = this;
+            OnMove?.Invoke(this, newPosition);
             Position = newPosition;
         }
     }

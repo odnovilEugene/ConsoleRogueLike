@@ -10,7 +10,7 @@ namespace RogueLike.Components.StaticObjects
         public bool IsPassable { get; }
         
 
-        public Wall(Position2D pos)
+        public Wall(Vector2 pos)
         {
             Position = pos;
             Symbol = WallSymbol;

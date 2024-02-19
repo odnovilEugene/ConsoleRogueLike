@@ -4,9 +4,8 @@ namespace RogueLike.Interfaces.Objects
 {
     public interface IMovingGameObject
     {
-
-        (int, int) ChooseDirection();
-
+        public event Action<GameObject, Vector2> OnMove;
+        Vector2 ChooseDirection();
         void Move();
     }
 }

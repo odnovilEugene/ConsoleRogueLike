@@ -22,12 +22,12 @@ namespace RogueLike.Components
             _data = new char[_width, _height];
         }
 
-        public GameObject[,] Generate(Position2D start, Position2D finish)
+        public GameObject[,] Generate(Vector2 start, Vector2 finish)
         {
-            _random = new Random(MapSettings.Seed != -1 ? MapSettings.Seed : (int)DateTime.Now.Ticks);
             Initialize();
             GenerateMaze(start.X, start.Y);
             MakeAccessible(finish);
+            _random = new Random((int)DateTime.Now.Ticks);
             return CharMazeToGameObjectMaze();
         }
 
@@ -39,7 +39,7 @@ namespace RogueLike.Components
             {
                 for (int x = 0; x < _width; x++)
                 {
-                    var pos = new Position2D(x, y);
+                    var pos = new Vector2(x, y);
                     if (_data[x, y] == WallSymbol)
                     {                 
                         gameObjectMaze[x, y] = new Wall(pos);
@@ -81,7 +81,7 @@ namespace RogueLike.Components
             }
         }
 
-        private void MakeAccessible(Position2D finish)
+        private void MakeAccessible(Vector2 finish)
         {   
             Console.WriteLine(Map.Height);
             var directions = new (int, int)[] { (0, -1), (0, 1), (-1, 0), (1, 0) };

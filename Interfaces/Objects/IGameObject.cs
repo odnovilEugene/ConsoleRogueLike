@@ -4,7 +4,7 @@ namespace RogueLike.Interfaces.Objects
 {
     public interface IGameObject
     {
-        public Position2D Position { get; set; }
-        public char Symbol { get; }
+        public Vector2 Position { get; set; }
+        public static char Symbol { get; }
     }
 }

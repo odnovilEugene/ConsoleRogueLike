@@ -9,7 +9,7 @@ namespace RogueLike.Components.StaticObjects
     {
         public bool IsPassable { get; }
         
-        public Exit(Position2D pos)
+        public Exit(Vector2 pos)
         {
             Position = pos;
             Symbol = ExitSymbol;
