@@ -21,7 +21,7 @@ namespace RogueLike.Components.StaticObjects
 
         public void SelfDestruct()
         {
-            Map.Instance[Position] = new Empty(Position);
+            Map.Instance.RemoveGameObject(this);
         }
     }
 }

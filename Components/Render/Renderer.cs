@@ -20,5 +20,21 @@ namespace RogueLike.Components.Render
                 Console.WriteLine(enemy.Value.GetInfo());
             }
         }
+
+        public static void PrintGameOverMsg()
+        {
+            Console.WriteLine("GAME OVER!");
+        }
+
+        public static void PrintLevelDoneMsg()
+        {
+            Console.Clear();
+            Console.Write("Continue to next level?\ny/n : ");
+        }
+
+        public static void PrintGameExitMsg()
+        {
+            Console.WriteLine("You exited the game!");
+        }
     }
 }

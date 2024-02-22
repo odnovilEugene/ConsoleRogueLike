@@ -32,8 +32,15 @@ namespace RogueLike.Components.MovingGameObject
                 case IStaticGameObject staticObject:
                     if (staticObject.IsPassable)
                     {
-                        if (staticObject is FirstAidKit aidKit)
-                            Heal(aidKit.HealAmount);
+                        switch(staticObject)
+                        {
+                            case FirstAidKit aidKit:
+                                Heal(aidKit.HealAmount);
+                                break;
+                            case Exit exit:
+                                Game.Instance.LevelDone = true;
+                                break;
+                        }                            
                         ChangePosition(newPos);
                     }
                     break;
@@ -71,7 +78,6 @@ namespace RogueLike.Components.MovingGameObject
         public void ChangePosition(Vector2 newPosition) 
         {
             OnMove?.Invoke(this, newPosition);
-            Position = newPosition;
         }
     }
 }

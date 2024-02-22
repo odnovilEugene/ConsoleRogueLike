@@ -13,25 +13,57 @@ namespace RogueLike.Components.Core
         public static Game Instance { get { return lazy.Value; } }
 
         public int Level { get; private set; } = 0;
-        public int EnemiesCount { get; set; } = 0;
-        public int PropsCount { get; set; } = 0;
         public Player Player { get; private set; }
+        public Exit Exit { get; set;}
+
+        private string Status 
+        {
+            get
+            {
+                if (IsGameOver)
+                {
+                    return "GameOver";
+                }
+                if (LevelDone)
+                {
+                    return "LevelDone";
+                }
+                if (ReturnPressed)
+                {
+                    return "ReturnPressed";
+                }
+                return "InProgress";
+            }
+        }
 
         public static event Action? OnTurn;
 
         public Dictionary<Vector2, ILivingGameObject> Enemies { get; } = new();
         private bool IsGameOver => Player.IsDead;
-        private bool LevelDone => Enemies.Count == 0;        
+        private bool ReturnPressed { get; set; }
+        private bool _levelDone = false;
+
+        public bool LevelDone
+        {
+            get => _levelDone || Enemies.Count == 0;
+            set => _levelDone = value;
+        }  
 
         // Значение по умолчанию
         public Game()
         {
             Player = new Player(MapSettings.start);
+            Exit = new Exit(MapSettings.finish);
         }
 
         private void Initialize(bool startCorner = true)
         {
-            Level++; 
+            Level++;
+
+            ClearEnemies();
+
+            LevelDone = false;
+
             int MapHeight = Map.Height;
             int MapWidth = Map.Width;
 
@@ -40,9 +72,10 @@ namespace RogueLike.Components.Core
 
             Map.Instance.Field = Map.Instance.MazeGenerator.Generate(MapSettings.start, MapSettings.finish);
 
-            Map.Instance[Player.Position] = new Empty(Player.Position);
-            Player.Position = startCorner ? MapSettings.start : MapSettings.finish;
-            Map.Instance[Player.Position] = Player;
+            Vector2 playerNewPos = startCorner ? MapSettings.start : MapSettings.finish;
+            Vector2 exitPos = startCorner ? MapSettings.finish : MapSettings.start;
+            Map.Instance.MoveGameObject(Exit, exitPos);
+            Map.Instance.MoveGameObject(Player, playerNewPos);
 
             Range widthR = startCorner ? new(3, MapWidth - 1) : new(0, MapWidth - 2);
             Range heightR = startCorner ? new(3, MapHeight - 1) : new(0, MapHeight - 2);
@@ -71,16 +104,31 @@ namespace RogueLike.Components.Core
                 if (Map.Instance[enemyPos] is Empty)
                 {
                     Enemies.Add(enemyPos, (Random.Shared.Next(0, 100) % 2 == 0) ? new Zombie(enemyPos) : new Shooter(enemyPos));
-                    Map.Instance[enemyPos] = (GameObject)Enemies[enemyPos];
+                    Map.Instance.AddGameObject((GameObject)Enemies[enemyPos]);
                     enemiesCount++;
                 }
                 counter++;
             }
         }
 
+        public void ClearEnemies()
+        {
+            foreach(var enemy in Enemies)
+            {
+                enemy.Value.Die();
+            }
+            Enemies.Clear();
+        }
+
         public void RemoveEnemy(GameObject obj)
         {
             Enemies.Remove(obj.Position);
+        }
+
+        public void ReassignKey(ILivingGameObject obj, Vector2 fromKey, Vector2 toKey)
+        {
+            Enemies.Remove(fromKey);
+            Enemies.Add(toKey, obj);
         }
 
         private void GenerateProps(int n, Range xR, Range yR)
@@ -97,13 +145,12 @@ namespace RogueLike.Components.Core
                 Vector2 propPos = Vector2.GetRandom(xR, yR);
                 if (Map.Instance[propPos] is Empty)
                 {
-                    Map.Instance[propPos] = new FirstAidKit(propPos);
+                    Map.Instance.AddGameObject(new FirstAidKit(propPos));
                     propsCount++;
                 }
                 counter++;
             }
         }
-
 
         private Vector2 LevelLoop()
         {
@@ -123,40 +170,40 @@ namespace RogueLike.Components.Core
         {
             Initialize();
             Vector2 direction;
+
             do
             {
                 direction = LevelLoop();
+                ReturnPressed = PlayerInput.DirectionToInput(direction) == PlayerInput.BreakKey;
 
-                if (PlayerInput.DirectionToInput(direction) == PlayerInput.BreakKey)
+                switch (Status)
                 {
-                    Console.WriteLine("You exited the game!");
-                    break;
-                }
+                    case "GameOver":
+                        Renderer.PrintGameOverMsg();
+                        return;
+                    case "LevelDone":
+                        ConsoleKey answer;
+                        do 
+                        {
+                            Renderer.PrintLevelDoneMsg();
+                            answer = PlayerInput.ReadInput();
+                        } while ((answer != PlayerInput.AcceptKey) && (answer != PlayerInput.RejectKey));
 
-                if (IsGameOver)
-                {
-                    Console.WriteLine("GAME OVER!");
-                    break;
-                }
-
-                if (LevelDone) {
-                    ConsoleKey answer;
-                    do 
-                    {
-                        Console.Clear();
-                        Console.Write("Continue to next level?\ny/n : ");
-                        answer = PlayerInput.ReadInput();
-                    } while ((answer != PlayerInput.AcceptKey) && (answer != PlayerInput.RejectKey));
-
-                    if (answer == PlayerInput.AcceptKey)
-                        Initialize(Level % 2 == 0);
-                    else if (answer == PlayerInput.RejectKey)
-                    {
-                        Console.Write("You exited the game!");
+                        if (answer == PlayerInput.AcceptKey)
+                        {
+                            Initialize(Level % 2 == 0);
+                        }
+                        else if (answer == PlayerInput.RejectKey)
+                        {
+                            Renderer.PrintGameExitMsg();
+                            return;
+                        }
                         break;
-                    }
+                    case "ReturnPressed":
+                        Renderer.PrintGameExitMsg();
+                        return;
                 }
-            } while (PlayerInput.DirectionToInput(direction) != PlayerInput.BreakKey);
+            } while (!ReturnPressed);
         }
 
         private void MakeTurn(Vector2 direction)

@@ -109,7 +109,7 @@ namespace RogueLike.Components.MovingGameObject
             Game.OnTurn -= Move;
             OnDeath -= Game.Instance.RemoveEnemy;
             OnDeath -= Map.Instance.RemoveGameObject;
-            OnShoot += Map.Instance.AddGameObject;
+            OnShoot -= Map.Instance.AddGameObject;
         }
 
         public void ChangePosition(Vector2 newPosition) {}

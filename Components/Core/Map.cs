@@ -14,8 +14,19 @@ namespace RogueLike.Components.Core
         public static Map Instance { get { return lazy.Value; } }
         public static int Height { get; } = MapSettings.Height;
         public static int Width { get; } = MapSettings.Width;
-        public GameObject[,] Field { get; set; }
+
+        private GameObject[,] _field;
+
+        public GameObject[,] Field
+        {
+            get => (GameObject[,])_field.Clone();
+            set
+            { 
+                _field = value;
+            }
+        }
         public MazeGenerator MazeGenerator { get; }
+
 
         public Map()
         {
@@ -27,6 +38,7 @@ namespace RogueLike.Components.Core
         {
             this[obj.Position] = new Empty(obj.Position);
             this[pos] = obj;
+            obj.Position = pos;
         }
 
         public void RemoveGameObject(GameObject obj)
@@ -54,14 +66,21 @@ namespace RogueLike.Components.Core
         }
     
         // Индексаторы для Map
-        public GameObject this [Vector2 pos] {
+        public GameObject this [Vector2 pos] 
+        {
             get => Field[pos.X, pos.Y];
-            set => Field[pos.X, pos.Y] = value;
+            private set
+            {
+                _field[pos.X, pos.Y] = value;
+            }
         }
 
         public GameObject this [int x, int y] {
             get => Field[x, y];
-            set => Field[x, y] = value;
+            private set
+            {
+                _field[x, y] = value;
+            }
         }
     }
 }

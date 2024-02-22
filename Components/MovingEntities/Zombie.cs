@@ -107,13 +107,11 @@ namespace RogueLike.Components.MovingGameObject
             OnMove -= Map.Instance.MoveGameObject;
         }
 
-        // Придумать как менять позицию у врага в словаре
+        // Придумать как менять позицию у врага в словаре (ReassignKey)
         public void ChangePosition(Vector2 newPosition)
         {
-            Game.Instance.Enemies.Remove(Position);
-            Game.Instance.Enemies.Add(newPosition, this);
+            Game.Instance.ReassignKey(this, Position, newPosition);
             OnMove?.Invoke(this, newPosition);
-            Position = newPosition;
         }
     }
 }

@@ -50,7 +50,6 @@ namespace RogueLike.Components.MovingGameObject
                         else
                         {
                             OnMove?.Invoke(this, newPos);
-                            Position = newPos;
                         }
                     }
                     else

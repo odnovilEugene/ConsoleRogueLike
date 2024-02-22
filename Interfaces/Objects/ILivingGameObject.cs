@@ -3,7 +3,7 @@ using RogueLike.Components.ObjectProps;
 
 namespace RogueLike.Interfaces.Objects
 {
-    public interface ILivingGameObject
+    public interface ILivingGameObject : IGameObject
     {
         public event Action<GameObject>? OnDeath;
         public Health Health { get; }

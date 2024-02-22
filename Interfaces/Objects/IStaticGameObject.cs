@@ -1,6 +1,6 @@
 namespace RogueLike.Interfaces.Objects
 {
-    public interface IStaticGameObject
+    public interface IStaticGameObject : IGameObject
     {
         public bool IsPassable { get; }
     }
