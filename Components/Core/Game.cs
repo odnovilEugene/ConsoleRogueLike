@@ -152,6 +152,26 @@ namespace RogueLike.Components.Core
             }
         }
 
+        private void AskForContinue()
+        {
+            ConsoleKey answer;
+            do 
+            {
+                Renderer.PrintLevelDoneMsg();
+                answer = PlayerInput.ReadInput();
+            } while ((answer != PlayerInput.AcceptKey) && (answer != PlayerInput.RejectKey));
+
+            if (answer == PlayerInput.AcceptKey)
+            {
+                Initialize(Level % 2 == 0);
+            }
+            else if (answer == PlayerInput.RejectKey)
+            {
+                Renderer.PrintGameExitMsg();
+                return;
+            }
+        }
+
         private Vector2 LevelLoop()
         {
             Vector2 direction;
@@ -182,22 +202,7 @@ namespace RogueLike.Components.Core
                         Renderer.PrintGameOverMsg();
                         return;
                     case "LevelDone":
-                        ConsoleKey answer;
-                        do 
-                        {
-                            Renderer.PrintLevelDoneMsg();
-                            answer = PlayerInput.ReadInput();
-                        } while ((answer != PlayerInput.AcceptKey) && (answer != PlayerInput.RejectKey));
-
-                        if (answer == PlayerInput.AcceptKey)
-                        {
-                            Initialize(Level % 2 == 0);
-                        }
-                        else if (answer == PlayerInput.RejectKey)
-                        {
-                            Renderer.PrintGameExitMsg();
-                            return;
-                        }
+                        AskForContinue();
                         break;
                     case "ReturnPressed":
                         Renderer.PrintGameExitMsg();
