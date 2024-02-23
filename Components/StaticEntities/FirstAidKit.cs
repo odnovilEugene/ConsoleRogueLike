@@ -1,7 +1,6 @@
 using RogueLike.Components.Core;
 using RogueLike.Interfaces.Objects;
-
-using static RogueLike.Settings.ObjectSymbols;
+using RogueLike.Settings;
 
 namespace RogueLike.Components.StaticObjects
 {
@@ -14,7 +13,8 @@ namespace RogueLike.Components.StaticObjects
         public FirstAidKit(Vector2 pos, int healAmount = 5)
         {
             Position = pos;
-            Symbol = FirstAidKitSymbol;
+            // Symbol = Game.Instance.SymbolContainer.GetFirstAidKitChar;
+            Symbol = ObjectSymbols.FirstAidKitSymbol;
             IsPassable = true;
             HealAmount = healAmount;
         }

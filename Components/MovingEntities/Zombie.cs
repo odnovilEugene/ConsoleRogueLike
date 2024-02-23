@@ -2,6 +2,7 @@ using RogueLike.Components.Core;
 using RogueLike.Components.ObjectProps;
 using RogueLike.Components.StaticObjects;
 using RogueLike.Interfaces.Objects;
+using RogueLike.Settings;
 
 namespace RogueLike.Components.MovingGameObject
 {
@@ -14,7 +15,8 @@ namespace RogueLike.Components.MovingGameObject
         public Zombie(Vector2 pos)
         {
             Position = pos;
-            Symbol = Settings.ObjectSymbols.ZombieSymbol;
+            // Symbol = Game.Instance.SymbolContainer.GetZombieChar;
+            Symbol = ObjectSymbols.ZombieSymbol;
             Health = new(3, 3);
             Attack = 1;
             Game.OnTurn += Move;

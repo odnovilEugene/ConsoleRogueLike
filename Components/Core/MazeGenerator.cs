@@ -2,28 +2,27 @@
 using RogueLike.Components.Core;
 using RogueLike.Components.StaticObjects;
 using static RogueLike.Utils.Utils;
-using static RogueLike.Settings.ObjectSymbols;
 using RogueLike.Settings;
 
 namespace RogueLike.Components
 {
     public class MazeGenerator
     {
-        private readonly char[,] _data;
-        private readonly int _width;
-        private readonly int _height;
+        private char[,]? _data;
+        private int _width;
+        private int _height;
         private Random _random;
 
-        public MazeGenerator(int width, int height)
+        public MazeGenerator()
         {
             _random = new Random(MapSettings.Seed != -1 ? MapSettings.Seed : (int)DateTime.Now.Ticks);
+        }
+
+        public GameObject[,] Generate(int width, int height, Vector2 start, Vector2 finish)
+        {
             _width = width;
             _height = height;
             _data = new char[_width, _height];
-        }
-
-        public GameObject[,] Generate(Vector2 start, Vector2 finish)
-        {
             Initialize();
             GenerateMaze(start.X, start.Y);
             MakeAccessible(finish);
@@ -40,11 +39,13 @@ namespace RogueLike.Components
                 for (int x = 0; x < _width; x++)
                 {
                     var pos = new Vector2(x, y);
-                    if (_data[x, y] == WallSymbol)
+                    // _data[x, y] == Game.Instance.SymbolContainer.GetWallChar
+                    if (_data[x, y] == ObjectSymbols.WallSymbol)
                     {                 
                         gameObjectMaze[x, y] = new Wall(pos);
                     }
-                    else if (_data[x, y] == EmptyCellSymbol)
+                    // _data[x, y] == Game.Instance.SymbolContainer.GetEmptyChar
+                    else if (_data[x, y] == ObjectSymbols.EmptyCellSymbol)
                     {
                         gameObjectMaze[x, y] = new Empty(pos);
                     }
@@ -59,7 +60,8 @@ namespace RogueLike.Components
             {
                 for (int x = 0; x < _width; x++)
                 {
-                    _data[x, y] = WallSymbol;
+                    // _data[x, y] = Game.Instance.SymbolContainer.GetWallChar;
+                    _data[x, y] = ObjectSymbols.WallSymbol;
                 }
             }
         }
@@ -73,9 +75,11 @@ namespace RogueLike.Components
             foreach (var (dx, dy) in directions)
             {
                 int newX = x + dx, newY = y + dy;
-                if (IsInsideBounds(newX, newY) && _data[newX, newY] != EmptyCellSymbol)
+                // IsInsideBounds(newX, newY) && _data[newX, newY] != Game.Instance.SymbolContainer.GetEmptyChar
+                if (IsInsideBounds(newX, newY) && _data[newX, newY] != ObjectSymbols.EmptyCellSymbol)
                 {
-                    _data[newX - dx / 2, newY - dy / 2] = EmptyCellSymbol;
+                    // _data[newX - dx / 2, newY - dy / 2] = Game.Instance.SymbolContainer.GetEmptyChar;
+                    _data[newX - dx / 2, newY - dy / 2] = ObjectSymbols.EmptyCellSymbol;
                     GenerateMaze(newX, newY);
                 }
             }
@@ -83,14 +87,14 @@ namespace RogueLike.Components
 
         private void MakeAccessible(Vector2 finish)
         {   
-            Console.WriteLine(Map.Height);
             var directions = new (int, int)[] { (0, -1), (0, 1), (-1, 0), (1, 0) };
             foreach (var (dx, dy) in directions)
             {
                 int newX = finish.X + dx, newY = finish.Y + dy;
                 if (IsInsideBounds(newX, newY))
                 {
-                    _data[newX, newY] = EmptyCellSymbol;
+                    // _data[newX, newY] = Game.Instance.SymbolContainer.GetEmptyChar;
+                    _data[newX, newY] = ObjectSymbols.EmptyCellSymbol;
                 }
             }
         }

@@ -2,6 +2,7 @@ using RogueLike.Components.Core;
 using RogueLike.Components.ObjectProps;
 using RogueLike.Components.StaticObjects;
 using RogueLike.Interfaces.Objects;
+using RogueLike.Settings;
 
 namespace RogueLike.Components.MovingGameObject
 {
@@ -14,7 +15,8 @@ namespace RogueLike.Components.MovingGameObject
         public Shooter(Vector2 pos)
         {
             Position = pos;
-            Symbol = Settings.ObjectSymbols.ShooterSymbol;
+            // Symbol = Game.Instance.SymbolContainer.GetShooterChar;
+            Symbol = ObjectSymbols.ShooterSymbol;
             Health = new(1, 1);
             Attack = 1;
             Game.OnTurn += Move;

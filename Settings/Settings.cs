@@ -1,7 +1,20 @@
 using RogueLike.Components.Core;
+using RogueLike.Interfaces.Settings;
 
 namespace RogueLike.Settings
 {
+    public class SymbolContainer : ISymbolContainer
+    {
+        public char GetPlayerChar => 'P';
+        public char GetZombieChar => 'Z';
+        public char GetShooterChar => 'S';
+        public char GetProjectileChar => '*';
+        public char GetEmptyChar => ' ';
+        public char GetWallChar => '▓';
+        public char GetExitChar => 'X';
+        public char GetFirstAidKitChar => '+';
+    }
+    
     internal static class ObjectSymbols
     {
         internal const char EmptyCellSymbol = ' ';

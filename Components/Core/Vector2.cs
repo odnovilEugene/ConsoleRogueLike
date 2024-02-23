@@ -10,7 +10,7 @@ namespace RogueLike.Components.Core
         public int X { get; set; }
         public int Y { get; set; }
 
-        public readonly bool InBound => X > 0 && X < Map.Width - 1 && Y > 0 && Y < Map.Height - 1;
+        public readonly bool InBound => X > 0 && X < Map.Instance.Width - 1 && Y > 0 && Y < Map.Instance.Height - 1;
 
         public Vector2(int x, int y)
         {

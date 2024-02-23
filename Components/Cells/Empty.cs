@@ -1,7 +1,6 @@
 using RogueLike.Components.Core;
 using RogueLike.Interfaces.Objects;
-
-using static RogueLike.Settings.ObjectSymbols;
+using RogueLike.Settings;
 
 namespace RogueLike.Components.StaticObjects
 {
@@ -13,7 +12,8 @@ namespace RogueLike.Components.StaticObjects
         public Empty(Vector2 pos)
         {
             Position = pos;
-            Symbol = EmptyCellSymbol;
+            // Symbol = Game.Instance.SymbolContainer.GetEmptyChar;
+            Symbol = ObjectSymbols.EmptyCellSymbol;
             IsPassable = true;
         }
     }

@@ -3,7 +3,7 @@ using RogueLike.Interfaces.Objects;
 
 namespace RogueLike.Components.Render
 {
-    public class Renderer
+    public static class Renderer
     {
         public static void PrintGame()
         {
@@ -12,7 +12,7 @@ namespace RogueLike.Components.Render
             Console.WriteLine(Map.Instance);
             PrintInfo();
         }
-        public static void PrintInfo()
+        private static void PrintInfo()
         {
             Console.WriteLine(Game.Instance.Player.GetInfo());
             foreach (var enemy in Game.Instance.Enemies)
@@ -35,6 +35,10 @@ namespace RogueLike.Components.Render
         public static void PrintGameExitMsg()
         {
             Console.WriteLine("You exited the game!");
+        }
+        public static void PrintGlobalExitMsg()
+        {
+            Console.WriteLine("You used global exit flag somehow!?");
         }
     }
 }

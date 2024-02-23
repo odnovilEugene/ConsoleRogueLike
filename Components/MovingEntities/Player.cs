@@ -2,6 +2,7 @@ using RogueLike.Components.Core;
 using RogueLike.Components.ObjectProps;
 using RogueLike.Components.StaticObjects;
 using RogueLike.Interfaces.Objects;
+using RogueLike.Settings;
 
 namespace RogueLike.Components.MovingGameObject
 {
@@ -14,7 +15,8 @@ namespace RogueLike.Components.MovingGameObject
         public Player(Vector2 pos)
         {
             Position = pos;
-            Symbol = Settings.ObjectSymbols.PlayerSymbol;
+            // Symbol = Game.Instance.SymbolContainer.GetPlayerChar;
+            Symbol = ObjectSymbols.PlayerSymbol;
             Health = new(10, 10);
             Attack = 2;
             OnMove += Map.Instance.MoveGameObject;
@@ -63,9 +65,9 @@ namespace RogueLike.Components.MovingGameObject
             Health -= amount;
         }
 
-        private void Heal(int amount)
+        public void Heal(int amount)
         {
-            Health += amount;
+            Health += amount > 0 ? amount : 0;
         }
 
         public string GetInfo()

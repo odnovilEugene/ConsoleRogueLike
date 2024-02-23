@@ -1,7 +1,6 @@
 using RogueLike.Components.Core;
 using RogueLike.Interfaces.Objects;
-
-using static RogueLike.Settings.ObjectSymbols;
+using RogueLike.Settings;
 
 namespace RogueLike.Components.StaticObjects
 {
@@ -13,7 +12,8 @@ namespace RogueLike.Components.StaticObjects
         public Wall(Vector2 pos)
         {
             Position = pos;
-            Symbol = WallSymbol;
+            // Symbol = Game.Instance.SymbolContainer.GetWallChar;
+            Symbol = ObjectSymbols.WallSymbol;
             IsPassable = false;
         }
 

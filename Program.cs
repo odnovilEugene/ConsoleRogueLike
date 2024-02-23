@@ -1,6 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-using RogueLike.Components.Core;
-using RogueLike.Settings;
+﻿using RogueLike.Components.Core;
 
 namespace RogueLike
 {
@@ -10,7 +8,7 @@ namespace RogueLike
         static void Main(string[] args)
         {
             // Реструктурировать файлы, только Program вверху
-
+            
             Game.Instance.GameLoop();
         }
     }

@@ -1,7 +1,6 @@
 using RogueLike.Components.Core;
 using RogueLike.Interfaces.Objects;
-
-using static RogueLike.Settings.ObjectSymbols;
+using RogueLike.Settings;
 
 namespace RogueLike.Components.StaticObjects
 {
@@ -12,7 +11,8 @@ namespace RogueLike.Components.StaticObjects
         public Exit(Vector2 pos)
         {
             Position = pos;
-            Symbol = ExitSymbol;
+            // Symbol = Game.Instance.SymbolContainer.GetExitChar;
+            Symbol = ObjectSymbols.ExitSymbol;
             IsPassable = true;
         }
     }

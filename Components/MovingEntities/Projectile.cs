@@ -1,6 +1,7 @@
 using RogueLike.Components.Core;
 using RogueLike.Components.StaticObjects;
 using RogueLike.Interfaces.Objects;
+using RogueLike.Settings;
 
 namespace RogueLike.Components.MovingGameObject
 {
@@ -12,7 +13,8 @@ namespace RogueLike.Components.MovingGameObject
         public Projectile(Vector2 pos, Vector2 direction)
         {
             Position = pos;
-            Symbol = Settings.ObjectSymbols.ProjectileSymbol;
+            // Symbol = Game.Instance.SymbolContainer.GetProjectileChar;
+            Symbol = ObjectSymbols.ProjectileSymbol;
             Damage = 1;
             Direction = direction;
             Game.OnTurn += Move;

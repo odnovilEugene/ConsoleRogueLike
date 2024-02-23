@@ -14,33 +14,31 @@ namespace RogueLike.Components.Core
 
         public int Level { get; private set; } = 0;
         public Player Player { get; private set; }
+
+        // public SymbolContainer SymbolContainer { get; }
         public Exit Exit { get; set;}
 
         private string Status 
         {
             get
             {
+                if (ExitGameFlag)
+                    return "GlobalExit";
                 if (IsGameOver)
-                {
                     return "GameOver";
-                }
                 if (LevelDone)
-                {
                     return "LevelDone";
-                }
                 if (ReturnPressed)
-                {
                     return "ReturnPressed";
-                }
                 return "InProgress";
             }
         }
 
         public static event Action? OnTurn;
-
         public Dictionary<Vector2, ILivingGameObject> Enemies { get; } = new();
         private bool IsGameOver => Player.IsDead;
-        private bool ReturnPressed { get; set; }
+        private bool ReturnPressed { get; set; } = false;
+        public bool ExitGameFlag { get; set; } = false;
         private bool _levelDone = false;
 
         public bool LevelDone
@@ -58,27 +56,31 @@ namespace RogueLike.Components.Core
 
         private void Initialize(bool startCorner = true)
         {
+            Player.Heal(5 - Level);
+
+            int mapHeight = Map.Instance.Height + Level * 2;
+            int mapWidth = Map.Instance.Width + Level * 2;
+            Vector2 start = Level == 0 ? MapSettings.start : new(1, 1);
+            Vector2 finish = Level == 0 ? MapSettings.finish : new(mapWidth - 2, mapHeight - 2);
+
             Level++;
 
             ClearEnemies();
 
             LevelDone = false;
 
-            int MapHeight = Map.Height;
-            int MapWidth = Map.Width;
+            int enemiesNumber = mapWidth / 8 + Level;
+            int propNumber = (mapWidth / 8) - Level >= 1 ? (mapWidth / 8) - Level : 1;
 
-            int enemiesNumber = MapWidth / 8 + Level;
-            int propNumber = (MapWidth / 8) - Level >= 1 ? (MapWidth / 8) - Level : 1;
+            Map.Instance.GenerateField(mapWidth, mapHeight, start, finish);
 
-            Map.Instance.Field = Map.Instance.MazeGenerator.Generate(MapSettings.start, MapSettings.finish);
-
-            Vector2 playerNewPos = startCorner ? MapSettings.start : MapSettings.finish;
-            Vector2 exitPos = startCorner ? MapSettings.finish : MapSettings.start;
+            Vector2 playerNewPos = startCorner ? start : finish;
+            Vector2 exitPos = startCorner ? finish : start;
             Map.Instance.MoveGameObject(Exit, exitPos);
             Map.Instance.MoveGameObject(Player, playerNewPos);
 
-            Range widthR = startCorner ? new(3, MapWidth - 1) : new(0, MapWidth - 2);
-            Range heightR = startCorner ? new(3, MapHeight - 1) : new(0, MapHeight - 2);
+            Range widthR = startCorner ? new(3, mapWidth - 1) : new(0, mapWidth - 2);
+            Range heightR = startCorner ? new(3, mapHeight - 1) : new(0, mapHeight - 2);
             GenerateEnemies(enemiesNumber, widthR, heightR);
             GenerateProps(propNumber, widthR, heightR);
         }
@@ -198,6 +200,9 @@ namespace RogueLike.Components.Core
 
                 switch (Status)
                 {
+                    case "GlobalExit":
+                        Renderer.PrintGlobalExitMsg();
+                        return;
                     case "GameOver":
                         Renderer.PrintGameOverMsg();
                         return;

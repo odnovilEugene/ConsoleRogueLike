@@ -1,4 +1,3 @@
-using System.Runtime.Remoting;
 using RogueLike.Components.StaticObjects;
 using RogueLike.Interfaces.Objects;
 using RogueLike.Settings;
@@ -12,26 +11,42 @@ namespace RogueLike.Components.Core
         private static readonly Lazy<Map> lazy = new(() => new Map());
 
         public static Map Instance { get { return lazy.Value; } }
-        public static int Height { get; } = MapSettings.Height;
-        public static int Width { get; } = MapSettings.Width;
+
+        public Vector2 Start { get; set; }
+        public Vector2 Finish { get; set; }
+        public int Height { get; set; }
+        public int Width { get; set; }
 
         private GameObject[,] _field;
 
         public GameObject[,] Field
         {
             get => (GameObject[,])_field.Clone();
-            set
-            { 
-                _field = value;
-            }
+            private set => _field = value;
         }
         public MazeGenerator MazeGenerator { get; }
 
-
         public Map()
         {
-            MazeGenerator = new MazeGenerator(Width, Height);
-            Field = MazeGenerator.Generate(MapSettings.start, MapSettings.finish);
+            Height = MapSettings.Height;
+            Width = MapSettings.Width;
+            Start = MapSettings.start;
+            Finish = MapSettings.finish;
+            MazeGenerator = new MazeGenerator();
+        }
+
+        public void GenerateField(int width, int height, Vector2 start, Vector2 finish)
+        {
+            SetParams(width, height, start, finish);
+            Field = MazeGenerator.Generate(Width, Height, Start, Finish);
+        }
+
+        public void SetParams(int width, int height, Vector2 start, Vector2 finish)
+        {
+            Width = width;
+            Height = height;
+            Start = start;
+            Finish = finish;
         }
 
         public void MoveGameObject(GameObject obj, Vector2 pos)
